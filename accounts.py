@@ -103,7 +103,8 @@ def addto_users(accno,passwd, first_name, last_name,dob, email, phone, address, 
 #     'M'
 # )
 
-def create_table_individual(accno):
+def create_table_individual(accno,amount):
+    import datetime
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f"""CREATE TABLE {'acnt'+str(accno)}
@@ -113,6 +114,13 @@ def create_table_individual(accno):
       amountleft bigint NOT NULL
       );
     """)
+    date = datetime.date.today()
+    time = str(datetime.datetime.now()).split()[-1]
+
+    cur.execute(f''' INSERT INTO {'acnt'+str(accno)} VALUES
+        ('{str(date)}' , '{time}' , 'account created' , {amount} );
+    ''')
+    conection.commit()
 
 
 

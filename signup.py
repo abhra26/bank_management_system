@@ -15,6 +15,7 @@ def signup():
     aadhar = input("enter aadhar:")
     zip_code = int(input("enter zip code:"))
     passwd = int(input("set your 4-digit passcode:"))
+    amount = int(input("enter initial amount to deposit: "))
     con = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = con.cursor()
     cur.execute("SELECT accno FROM users;")
@@ -27,7 +28,7 @@ def signup():
 
     acnt.addto_users(accno, passwd, first_name, last_name, dob, email, phone, address, city, state, aadhar, zip_code,
                      gender)
-    acnt.create_table_individual(accno)
+    acnt.create_table_individual(accno,amount)
 
     print(f''' Your account details are:
                      Acoount number : {accno}
@@ -36,5 +37,7 @@ def signup():
 
                      Account in the
                      name of        : {name}
+
+                     Amount left    : {amount}
                  Please remember these details. Thank you for signing uo
                  You may login now by going back to our home page.''')
