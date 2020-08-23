@@ -1,6 +1,8 @@
 import accounts as acnt
 import signup
 import sys
+import login
+import transaction
 
 print('''
 ......WELCOME TO VIRTUAL BANK......
@@ -44,23 +46,21 @@ entry = int(input('enter choice : '))
 if entry == 1:
     usr = int(input('enter account number:'))
     passwd = int(input('enter 4-digit passcode :'))
-    con = acnt.establish_connection('localhost','root','vishal26','bank')
-    cur = con.cursor()
-    cur.execute("SELECT accno,passwd FROM users")
-    lis = cur.fetchall()
-    di = {}
-    for i in range(len(lis)):
-        di[lis[i][0]] = lis[i][1]
+    login.login(usr,passwd)
+    entry2 = int(input('''Choose you next action :
+                1. Withdraw
+                2. Deposit
+                3. Update record
+                4. Delete account
+                5. Exit
+                
+                Your choice : '''))
 
-    if usr in di.keys():
-        if passwd == di[usr]:
-            print('login sucessful')
+    if entry2 == 1:
+        print(transaction.withdraw(usr))
 
-        else:
-            print("Invalid Passcode")
-
-    else:
-        print("invalid account number,You may sign up first then try to login")
+    elif entry2 == 2:
+        print(transaction.deposit(usr))
 
 elif entry == 2:
     signup.signup()
