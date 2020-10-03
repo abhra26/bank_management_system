@@ -3,6 +3,7 @@ import signup
 import sys
 import login
 import transaction
+import updaterecords as up
 
 print('''
 ......WELCOME TO VIRTUAL BANK......
@@ -50,23 +51,41 @@ if entry == 1:
     entry2 = int(input('''Choose you next action :
                 1. Withdraw
                 2. Deposit
-                3. Update record
-                4. Delete account
-                5. Exit
-                
+                3. Update profile
+                4. Temporary block account 
+                5. Transfer money
+                6. mini-statement 
+                7.Exit
                 Your choice : '''))
 
     if entry2 == 1:
-        print(transaction.withdraw(usr))
+        amount = int(input('enter amount:'))
+        print(transaction.withdraw(amount,usr))
 
     elif entry2 == 2:
-        print(transaction.deposit(usr))
+        amount = int(input('enter amount:'))
+        print(transaction.deposit(amount,usr))
+
+    elif entry2 == 3:
+        field = input("enter field to be changed:")
+        print(up.update_usr_rec(usr,field))
+
+    elif entry2 == 5:
+        amount = int(input('enter amount to be transferred:'))
+        child = int(input('enter acount number to be transfered too:'))
+        print(transaction.transfer(amount,usr,child))
+
+    elif entry2 == 6:
+        tid = input('enter transaction id:')
+        print(transaction.get_history(tid))
+
+    elif entry2 == 7:
+        sys.exit(0)
 
 elif entry == 2:
     signup.signup()
 
 else:
-
     print("Thank you and have a great day. Bye")
     sys.exit(0)
 
