@@ -6,9 +6,10 @@ import login as lg
 from tkinter import messagebox
 import signup as sg
 import sys
+import otp_email_sender_yagmail as mail
 import tkmacosx as tkm
 ID_info = ""
-ID_info_initial = ''
+ID_info_initial = []
 volatile = 0
 Password = 0
 variable = "new_cust"
@@ -17,7 +18,7 @@ accntid = 0
 wrong_login = 0
 wrong_credentials = 0
 wrong_otp = 0
-# d_transact = {'card_no':'white','expiry':'white','cvv':'white'}
+card_number_initial = []
 
 ##INTRO PAGE
 
@@ -90,7 +91,6 @@ def login_page():
                                                                                                            column=2,
                                                                                                            sticky=E)
 
-
 ##LOGIN CONFIRMATION
 def login():
     global ID_info
@@ -102,18 +102,18 @@ def login():
     global volatile
     global ID_info_initial
     ID_info = ID.get()
-    if volatile == 0:
-        ID_info_initial = ID_info
+    ID_info_initial.append(ID_info)
     account_list = acnt.getno_of_acnts(ID_info)  ##I GAVE THIS TO RUN FOR NOW, YOU FILL UP THIS LIST HERE
     # ALSO DO ONE THING TRY TO STORE THIS AS GLOBAL VARIABLE IT HELPS IN BACK BUTTON
     status = acnt.get_status_account(account_list[0])
+    name = acnt.get_name(ID_info)
 
     if status == 'open':
         if check_login():
-            message = messagebox.showinfo("SUCCESS!", "Login Successfull! Press OK to continue.", icon="info")
+            message = messagebox.showinfo("LOGGED IN", f"Welcome {name}.", icon="info")
             if message == "ok":
                 login_register.destroy()
-                accounts(account_list)
+                accounts()
         else:
             message = messagebox.showerror("ERROR!", "Login Unsuccessful. \nTry Again")
             if message == "ok":
@@ -126,10 +126,6 @@ def login():
             sys.exit(0)
         else:
             pass
-
-
-
-
 
 ##LOGIN VERIFICATION
 
@@ -144,16 +140,20 @@ def check_login():
     Password = int(Pass.get())
     if lg.login(ID_info,Password):
         return True
-    elif ID_info == ID_info_initial:
+    elif ID_info_initial[wrong_login]==ID_info:
         wrong_login+=1
         if wrong_login == 4:
             acnt.block_cust(ID_info)
+            mail.status_email(acnt.get_email(custid=ID_info),'customer id')
             error = messagebox.showerror("ALERT!",
                         "You have entered the login details wrong 4 times\n YOUR ACCOUNT HAS BEEN BLOCKED\n Please contact customer care for more details")
+            wrong_login = 0
+            ID_info_initial = []
 
         else:
             return False
     else:
+        wrong_login = 1
         return False
 
 
@@ -426,6 +426,7 @@ def register(screen):
     else:
         acnt.addto_acnttype(lis[1],"Savings")
      ##Last Lines
+    mail.register_mail(str(email),lis[0],lis[1])
     success = messagebox.showinfo("SUCCESS!",
                                   f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
     if success == "ok":
@@ -434,12 +435,14 @@ def register(screen):
 
 ###ACOUNTS LIST SCREEN
 
-def accounts(account_list):
+def accounts():
     import accounts as acnt
     global account_screen
+    global ID_info
     account_screen = Tk()
     account_screen.title("The Continental")
     account_screen.iconbitmap("Icon.ico")
+    account_list = acnt.getno_of_acnts(ID_info)
 
     n = len(account_list)
     n = n + 2
@@ -560,14 +563,14 @@ def back(screen, value="back"):
 
     elif screen == menu:
         if value == "exit":
-            warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ? ?")
+            warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ?")
             if warning == 'yes':
                 screen.destroy()
             else:
                 pass
         else:
             screen.destroy()
-            accounts(account_list)
+            accounts()
     elif screen == amount_screen:
         warning = messagebox.askquestion("Confirm Form Resubmission!",
                                          "Turning back will take you to back to Menu!\n Do you wish to proceed ?")
@@ -782,12 +785,14 @@ def check_card(mode="withdraw"):
     global entry_receiver
     import cardlog as cl
     global menu
+    global card_number_initial
 
     receiver_ac_id = 0
     if mode == "transfer":
         receiver_ac_id = receiver_ac.get()
 
     card_number = int(c_no.get())
+    card_number_initial.append(card_number)
     status = cl.get_card_status(card_number)
     if status == 'blocked':
         error = messagebox.showinfo("ERROR!",f"Your card status is{status}\nPlease contact customer care for more details")
@@ -822,16 +827,24 @@ def check_card(mode="withdraw"):
 def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
     import cardlog as cl
     global wrong_credentials
+    import accounts as acnt
+    global card_number_initial
     if cl.check_details(card_number,expiry_date,cvv,card_type):
+        card_number_initial = []
         return True  # USE YOUR CONFIRMATION PROGRAM HERE
     else:
-        wrong_credentials+=1
-        if wrong_credentials == 4:
-            error = messagebox.showerror("ALERT!",
+        if card_number_initial[wrong_credentials] == card_number:
+            wrong_credentials+=1
+            if wrong_credentials == 4:
+                mail.status_email(acnt.get_email(card_number),f"card:XXXXXXXXXXXXX{str(card_number)[-1:-4:-1]}")
+                error = messagebox.showerror("ALERT!",
                                          "Your have entered the credentials wrong 4 times\nYOUR CARD IS BLOCKED\nPlease contact customer care for more details")
-            if error == 'ok':
-                sys.exit(0)
+                wrong_credentials = 0
+                card_number_initial = []
+                if error == 'ok':
+                    sys.exit(0)
         else:
+            wrong_credentials = 1
             return False
 
 
@@ -853,18 +866,6 @@ def statement_page(ac_no):
     else:
         lst2 = [['NA', 'NA', 'NA', 'No transaction made till date']]
 
-
-    # lst2 = [["ID4041288", "27/09/2019", "14:23", "DEBIT"],
-    #         ["ID4041223", "17/07/2019", "12:03", "CREDIT"],
-    #         ["ID4041543", "07/05/2019", "02:13", "DEBIT"],
-    #         ["ID4041233", "22/03/2019", "17:20", "CREDIT"],  ###YOU GIVE YOUR LIST LIKE LIST 2, BECUASE TO
-    #         ["ID4041288", "27/09/2019", "14:23", "DEBIT"],  ###FORM THE TABLE I'LL NEED TO APPEND THAT'S WHY
-    #         ["ID4041223", "17/07/2019", "12:03", "CREDIT"],
-    #         ["ID4041543", "07/05/2019", "02:13", "DEBIT"],
-    #         ["ID4041233", "22/03/2019", "17:20", "CREDIT"],
-    #         ["ID4041288", "27/09/2019", "14:23", "DEBIT"],
-    #         ["ID4041223", "17/07/2019", "12:03", "CREDIT"]]
-
     for i in range(len(lst2)):
         lst.append(lst2[i])
 
@@ -883,7 +884,7 @@ def statement_page(ac_no):
     label = Label(frame, text="     ").grid(row=0, column=0)
     for i in range(total_rows):
         for j in range(total_columns):
-            tab = Entry(frame, width=20,
+            tab = Entry(frame, width=35,
                         font=('Arial', 16, 'bold'))
 
             tab.grid(row=i + 1, column=j + 1)
@@ -900,8 +901,9 @@ def statement_page(ac_no):
 def otp_page(amount, card_number, receiver_ac_id, mode):
     global otp_screen
     global image_f
+    import accounts as acnt
 
-    otp = generate_otp()
+    otp = mail.otp_mail(acnt.get_email(card_number))
     otp_screen = Toplevel()
     otp_screen.title("The Continental")
     otp_screen.iconbitmap("Icon.ico")
@@ -925,16 +927,18 @@ def otp_page(amount, card_number, receiver_ac_id, mode):
                                                     mode)).grid(row=2, column=0, padx=20, pady=50)
 
 
-def generate_otp():
-    import random
-    n = random.randint(10000, 99999)
-    print(f"_____SMS_____\nYour account is being accessed for making a transaction\nYour OTP is {n} \nPlease confirm transaction")
-    return n
+
+# def generate_otp():
+#     import random
+#     n = random.randint(10000, 99999)
+#     print(f"_____SMS_____\nYour account is being accessed for making a transaction\nYour OTP is {n} \nPlease confirm transaction")
+#     return n
 
 
 def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
     import cardlog as cl
     import transaction as txn
+    import accounts as acnt
     if generated == entered:
         success = messagebox.showinfo("Success!",
                                       "OTP Verification Complete!\nYour Transaction is being processed.\nClick OK to return to confirm finally")

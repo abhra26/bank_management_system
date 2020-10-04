@@ -13,37 +13,47 @@ def gen_utid(file = 'utids'):
         fl.close()
         return str(num)
 
-def gen_tid(accntid,datetime,file="utids"):
-    import cardlog as cl
-    carddig = str(cl.get_cardno(accntid))[-1:-4:-1]
+def gen_tid(cardno,datetime,file="utids"):
+    carddig = str(cardno)[-1:-4:-1]
     utid = str(gen_utid(file))
     return 'txn'+utid+'.'+datetime+'.'+carddig[-1:-4:-1]
+# print(gen_tid(5412088017153251,"2020-10-3.12.00.00.00"))
+
+
 
 def withdraw(amount,cardno):
     import cardlog as cl
+    import otp_email_sender_yagmail as email
+    import accounts as acnt
     accntid = cl.get_accntid(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance - amount
     if fi_balance>0:
         cl.update_balance(cardno,fi_balance)
         description = f'{amount} withdrawn'
-        details = add_history(accntid,description,cardno)
+        details = add_history(description,cardno)
+        email.transacttion_mail(acnt.get_email(cardno),accntid,details[0])
         return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id{details[1]}"
     else:
         return f"Insufficient funds, balance={in_balance}"
 
 def deposit(amount,cardno):
     import cardlog as cl
+    import otp_email_sender_yagmail as email
+    import accounts as acnt
     accntid = cl.get_accntid(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance + amount
     cl.update_balance(cardno, fi_balance)
     description = f'{amount} deposited'
-    details = add_history(accntid,description,cardno)
+    details = add_history(description,cardno)
+    email.transacttion_mail(acnt.get_email(cardno), accntid, details[0])
     return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id {details[1]}"
 
 def transfer(amount,cardno_parent,cardno_child):
     import cardlog as cl
+    import otp_email_sender_yagmail as email
+    import accounts as acnt
     parent = cl.get_accntid(cardno_parent)
     child = cl.get_accntid(cardno_child)
     bal1 = cl.get_balance_card(cardno_parent)
@@ -54,14 +64,15 @@ def transfer(amount,cardno_parent,cardno_child):
         cl.update_balance(cardno_parent,nbal1)
         cl.update_balance(cardno_child,bal2)
         description = f'{amount} transfered from {parent} to {child}'
-        details = add_history(parent,description,cardno_parent)
+        details = add_history(description,cardno_parent)
         description = f'{amount} transfered to account from {parent}'
-        add_history(child,description,cardno_child)
+        add_history(description,cardno_child)
+        email.transacttion_mail(acnt.get_email(cardno_parent), parent, details[0])
         return f"transaction successful.\nBalance = {nbal1}\ntransaction id: {details[0]}\nunique transaction id: {details[1]}"
     else:
         return f"insufficient funds. Balance = {bal1}"
 
-def add_history(accntid,description,cardno):
+def add_history(description,cardno):
     import accounts as acnt
     import datetime as dt
     dame = str(dt.datetime.today())
@@ -70,7 +81,7 @@ def add_history(accntid,description,cardno):
     connection = acnt.establish_connection("localhost","root","vishal26","bank")
     cur = connection.cursor()
     utid = int(gen_utid())
-    tid = gen_tid(accntid,dateime)
+    tid = gen_tid(cardno,dateime)
     details = [tid,utid]
     cur.execute(f'''INSERT INTO transactionlog VALUES
     ('{tid}',{utid},'{lis[0]}','{lis[-1]}','{description}',{cardno});
@@ -110,14 +121,10 @@ def ministatement(cardno):
         for i in result:
             final.append(list(i))
         final.reverse()
-        return final
+        return final[:15]
     except:
         final = [['NA','NA','NA','No transaction made till date']]
         return final
-
-
-
-
 
 
 

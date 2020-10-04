@@ -78,6 +78,31 @@ def block_cust(custid):
             ''')
     conection.commit()
 
+def get_email(cardno='NA',custid='NA'):
+    import cardlog as cl
+    conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = conection.cursor()
+    try:
+        accntid = cl.get_accntid(cardno)
+        cur.execute(f'''SELECT email FROM users WHERE accntid={accntid};''')
+        result = cur.fetchall()[0][0]
+        return result
+    except:
+        cur.execute(f'''SELECT email FROM users WHERE custid='{custid}';''')
+        result = cur.fetchall()[0][0]
+        return result
+
+def get_name(custid):
+    conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = conection.cursor()
+    cur.execute(f'''SELECT name FROM users WHERE custid = '{custid}';''')
+    result = cur.fetchone()[0]
+    return result
+
+
+
+
+
 
 
 
