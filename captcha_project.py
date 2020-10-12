@@ -11,24 +11,27 @@ def font_select():
         a=ImageFont.truetype('seguili.ttf',40)  #3
     return (a)
 
-st=''
-s="qwertyuioplkjhgfdsazxcvbnm1209873654QWERTYUIOPASDFGHJKLZXCVBNM"
-for i in range(8):
-    a=random.randint(0,61)
-    st=st+s[a]
+def create_captcha():
+    st=''
+    s="qwertyuioplkjhgfdsazxcvbnm1209873654QWERTYUIOPASDFGHJKLZXCVBNM"
+    for i in range(8):
+        a=random.randint(0,61)
+        st=st+s[a]
 
-image=Image.open('captcha_pic.jpg') #4
-draw=ImageDraw.Draw(image)
-position=150
-color='rgb(0,0,0)'
-for i in st:
-    font=font_select()
-    draw.text((position,60), i, fill=color, font=font)
-    position=position+33
+    image=Image.open('captcha_pic.jpg') #4
+    draw=ImageDraw.Draw(image)
+    position=150
+    color='rgb(0,0,0)'
+    for i in st:        
+        font=font_select()
+        draw.text((position,60), i, fill=color, font=font)
+        position=position+33
 
-blur=image.filter(ImageFilter.BLUR)
-blur.save('pic.jpg')
-print(st)
+    blur=image.filter(ImageFilter.BLUR)
+    blur.save('pic.png')#
+    return st
+
+create_captcha()
 
 '''Instructions
 download and save the other given files

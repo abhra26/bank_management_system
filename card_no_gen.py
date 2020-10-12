@@ -48,6 +48,11 @@ def visa(L):
         if n in L:
             c=1
     return n
+def generate_card(type,lis):
+    if type in ['VISA','Visa','visa']:
+        return visa(lis)
+    else:
+        return mastercard(lis)
 
 
 '''Instruction:

@@ -7,7 +7,7 @@ from tkinter import messagebox
 import signup as sg
 import sys
 import otp_email_sender_yagmail as mail
-import tkmacosx as tkm
+import captcha_project as cp
 ID_info = ""
 ID_info_initial = []
 volatile = 0
@@ -25,23 +25,28 @@ card_number_initial = []
 def intro():
     global image_f
     global login_register
-    global variable
     login_register = Tk()
     login_register.title("The Continental")
     login_register.iconbitmap("Icon.ico")
-    login_register.geometry("540x480")
+    login_register.geometry("540x640")
 
     image = Image.open("Continental.png")
     image = image.resize((520, 100), Image.ANTIALIAS)
     image_f = ImageTk.PhotoImage(image)
     image_g = image_f
-    logo = Label(login_register, image=image_g).grid(row=0,column=0,columnspan=3)
+    logo = Label(login_register, image=image_g).grid(row=0, column=0, columnspan=3)
 
-    Butt1 = Button(login_register, text= "LOGIN" , command=login_page, height=5, width = 50, highlightbackground ="#B4B4B4").grid(row=1,column=1)
-    gap_a = Label(login_register, text= "", height = 3).grid(row=2,column=0)
-    Butt2 = Button(login_register, text= "REGISTER" , command=lambda : account_selection(variable), height=5, width=50, highlightbackground ="#B4B4B4").grid(row=3,column=1)
-    gap_b = Label(login_register, text= "", height = 3).grid(row=4,column=0)
-    Butt3 = Button(login_register, text="EXIT", command=lambda: back(login_register) , height=5, width=50, highlightbackground ="#B4B4B4").grid(row=5,column=1)
+    Butt1 = Button(login_register, text="LOGIN", command=login_page, height=5, width=50, bg="#B4B4B4").grid(row=1,
+                                                                                                            column=1)
+    gap_a = Label(login_register, text="", height=3).grid(row=2, column=0)
+    Butt2 = Button(login_register, text="REGISTER", command= lambda : account_selection(variable), height=5, width=50, bg="#B4B4B4").grid(
+        row=3, column=1)
+    gap_b = Label(login_register, text="", height=3).grid(row=4, column=0)
+    Butt3 = Button(login_register, text="CUSTOMER CARE", command=cust_care_page, height=5, width=50, bg="#B4B4B4").grid(
+        row=5, column=1)
+    gap_c = Label(login_register, text="", height=3).grid(row=6, column=0)
+    Butt4 = Button(login_register, text="EXIT", command=lambda: back(login_register), height=5, width=50,
+                   bg="#B4B4B4").grid(row=7, column=1)
 
     login_register.mainloop()
     
@@ -117,7 +122,6 @@ def login():
         else:
             message = messagebox.showerror("ERROR!", "Login Unsuccessful. \nTry Again")
             if message == "ok":
-                entry1.delete(0, END)
                 entry2.delete(0, END)
     else:
         error = messagebox.showerror("ALERT!",
@@ -269,6 +273,7 @@ def register_page():
     global stateID
     global aadharID
     global pincode
+    global Register_screen
 
 
     f_name = StringVar()
@@ -364,73 +369,11 @@ def register_page():
 ##REGISTRATION PROCESS AND CONFIRMATION
 ##YOU HAVE YOUR WORK HERE
 def register(screen):
-    global variable
-    global choice
-    global incomeamt
-    global business_address
-    global ssno
-    global profitpa
-    global f_name
-    global l_name
-    global bday
-    global mailID
-    global password
-    global sex
-    global number
-    global ad
-    global cityID
-    global stateID
-    global aadharID
-    global pincode
-    global ID_info
-    global Password
-    import accounts as acnt
-    # global lis
+    screen.destroy()
+    captcha_page("register","na","na",screen)
 
-    ##DATAS FOR DATABASE MANAGEMENT
 
-    name = f_name.get() + " " + l_name.get()
-    dob = bday.get()
-    email = mailID.get()
-    passwd = password.get()
-    if sex.get() in ['male','Male']:
-        gender = 'M'
-    elif sex.get() in ['female','Female']:
-        gender = 'F'
-    else:
-        gender = 'O'
-    mobile = number.get()  # int
-    address = ad.get()
-    city = cityID.get()
-    state = stateID.get()
-    aadhar = int(aadharID.get())  # int
-    zipcode = int(pincode.get())  # int
-    ##You use your function for SQL anywhere here
-    if variable == "new_cust":
-        lis = sg.signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,passwd,variable,'cstmr')
-    else:
-        ID_info = ID.get()
-        Password = Pass.get()
-        lis = sg.signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,Password,variable,ID_info)
-    acntype = choice.get()
-    if acntype == "CREDIT":
-        income = int(incomeamt.get())  # int
-        work_address = business_address.get()
-        security_number = int(ssno.get())  # int
-        profit = int(profitpa.get())  # int
-        acnt.addto_creditacnts(lis[0],lis[1],work_address,income,profit,security_number,income+profit,0,'NA')
-        acnt.addto_acnttype(lis[1],"Credit")
 
-    elif acntype == "DEBIT":
-        acnt.addto_acnttype(lis[1],"Debit")
-    else:
-        acnt.addto_acnttype(lis[1],"Savings")
-     ##Last Lines
-    mail.register_mail(str(email),lis[0],lis[1])
-    success = messagebox.showinfo("SUCCESS!",
-                                  f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
-    if success == "ok":
-        screen.destroy()
 
 
 ###ACOUNTS LIST SCREEN
@@ -502,32 +445,30 @@ def get_account(ac_no):
         frame = LabelFrame(menu, text="Account Number: " + str(ac_no))
         frame.grid(row=1, column=0, padx=80, pady=20)
 
-        button_deposit = Button(frame, font=("Calibri", 18), text="Deposit", highlightbackground="#B4B4B4",
+        button_deposit = Button(frame, font=("Calibri", 18), text="Deposit", bg="#B4B4B4",
                                 command=lambda: deposit_withdraw_transfer(mode="deposit"), padx=76).grid(row=0,
                                                                                                          column=0,
                                                                                                          padx=40,
                                                                                                          pady=40)
-        button_mnstment = Button(frame, font=("Calibri", 18), text="Mini Statement", highlightbackground="#B4B4B4",
+        button_mnstment = Button(frame, font=("Calibri", 18), text="Mini Statement", bg="#B4B4B4",
                                  command=lambda: statement_page(ac_no), padx=45).grid(row=0, column=1, padx=40, pady=40)
-        button_withdraw = Button(frame, font=("Calibri", 18), text="Withdraw", highlightbackground="#B4B4B4",
+        button_withdraw = Button(frame, font=("Calibri", 18), text="Withdraw", bg="#B4B4B4",
                                  command=deposit_withdraw_transfer, padx=60).grid(row=1, column=0, padx=40, pady=40)
-        button_transfer = Button(frame, font=("Calibri", 18), text="Transfer", highlightbackground="#B4B4B4",
+        button_transfer = Button(frame, font=("Calibri", 18), text="Transfer", bg="#B4B4B4",
                                  command=lambda: deposit_withdraw_transfer(mode="transfer"), padx=80).grid(row=1,
                                                                                                            column=1,
                                                                                                            padx=40,
                                                                                                            pady=40,
                                                                                                            columnspan=1)
-        button_balance = Button(frame, font=("Calibri", 18), text="Check Balance", highlightbackground="#B4B4B4",
-                                command=lambda: balance_page(ac_no),
-                                padx=45).grid(row=2, column=0, columnspan=2, padx=40, pady=40)
+        button_balance = Button(frame, font=("Calibri", 18), text="Check Balance", bg="#B4B4B4", command=lambda : balance_page(accntid),
+                                padx=45).grid(row=2, column=0, columnspan=1, padx=40, pady=40)
+        button_apply = Button(frame, font=("Calibri", 18), text="Apply For Card", bg="#B4B4B4",
+                              command=lambda: card_type_page(ac_no), padx=45).grid(row=2, column=1, columnspan=1,
+                                                                                   padx=40, pady=40)
 
-        button_back = Button(menu, font=("Calibri", 10), text="Back", highlightbackground="#B4B4B4",
-                             command=lambda: back(menu)).grid(row=4,
-                                                              column=1,
-                                                              padx=20,
-                                                              pady=10,
-                                                              sticky=E)
-        button_exit = Button(menu, font=("Calibri", 10), text="Exit", highlightbackground="#B4B4B4",
+        button_back = Button(menu, font=("Calibri", 10), text="Back", bg="#B4B4B4", command=lambda: back(menu)).grid(
+            row=4, column=1, padx=20, pady=10, sticky=E)
+        button_exit = Button(menu, font=("Calibri", 10), text="Exit", bg="#B4B4B4",
                              command=lambda: back(menu, value="exit")).grid(row=4, column=0, padx=20, pady=10, sticky=W)
 
         menu.mainloop()
@@ -544,6 +485,15 @@ def back(screen, value="back"):
     global menu
     global deposit_withdraw_transfer_page
     global statement_screen
+    global card_type_screen
+    global cust_care_screen
+    global account_IDno
+    global ID_info
+    global captcha_screen
+    global card_page
+    global company_screen
+    global card_typo
+
     if screen == credit_screen or screen == Register_screen:
         warning = messagebox.askquestion("Confirm Form Resubmission!",
                                          "Turning back will take you to Account Selection Page!\n Do you wish to proceed ?")
@@ -553,17 +503,17 @@ def back(screen, value="back"):
         else:
             pass
     elif screen == login_register or screen == account_screen:
-        warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ? ?")
+        warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit?")
         if warning == 'yes':
             screen.destroy()
         else:
             pass
-    elif screen == screen1 or screen == login_screen or screen == deposit_withdraw_transfer_page or screen == statement_screen:
+    elif screen == screen1 or screen == login_screen or screen == deposit_withdraw_transfer_page or screen == statement_screen or screen == cust_care_screen or screen == card_type_screen:
         screen.destroy()
 
     elif screen == menu:
         if value == "exit":
-            warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ?")
+            warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit?")
             if warning == 'yes':
                 screen.destroy()
             else:
@@ -571,6 +521,7 @@ def back(screen, value="back"):
         else:
             screen.destroy()
             accounts()
+
     elif screen == amount_screen:
         warning = messagebox.askquestion("Confirm Form Resubmission!",
                                          "Turning back will take you to back to Menu!\n Do you wish to proceed ?")
@@ -578,7 +529,25 @@ def back(screen, value="back"):
             screen.destroy()
         else:
             pass
+    elif screen == company_screen:
+        screen.destroy()
+        card_type_page(account_IDno)
+    elif screen == captcha_screen:
+        if value == "register":
+            warning = messagebox.askquestion("Confirm Form Resubmission!",
+                                             "Turning back will take you to Account Selection Page!\n Do you wish to proceed ?")
+            if warning == 'yes':
+                account_selection(variable)
+                screen.destroy()
+            else:
+                pass
+        elif value == "card_application":
+            screen.destroy()
+            card_company(card_typo)
 
+    elif screen == card_page:
+        screen.destroy()
+        card_type_page(account_IDno)
 
 def deposit_withdraw_transfer(mode="withdraw"):
     global image_f
@@ -836,7 +805,8 @@ def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
         if card_number_initial[wrong_credentials] == card_number:
             wrong_credentials+=1
             if wrong_credentials == 4:
-                mail.status_email(acnt.get_email(card_number),f"card:XXXXXXXXXXXXX{str(card_number)[-1:-4:-1]}")
+                cl.block_card(ID_info,accntid,card_number)
+                mail.status_email(acnt.get_email(card_number),"card",card_number)
                 error = messagebox.showerror("ALERT!",
                                          "Your have entered the credentials wrong 4 times\nYOUR CARD IS BLOCKED\nPlease contact customer care for more details")
                 wrong_credentials = 0
@@ -948,7 +918,7 @@ def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
             elif mode == 'deposit':
                 result = txn.deposit(amount,card_number)
             else:
-                result = txn.transfer(amount,card_number,cl.get_cardno(reciever_ac_id))
+                result = txn.transfer(amount,card_number,reciever_ac_id)
 
             success2 = messagebox.showinfo("success!",result)
             if success2 == "ok":
@@ -976,6 +946,101 @@ def balance_page(accntid):
         if message == "ok":
             pass
 
+
+def cust_care_page():
+    global image_f
+    global cust_care_screen
+
+    cust_care_screen = Toplevel()
+    cust_care_screen.title("The Continental")
+    cust_care_screen.iconbitmap("Icon.ico")
+
+    logo = Label(cust_care_screen, image=image_f).grid(row=0, column=0, columnspan=3)
+
+    frame = LabelFrame(cust_care_screen, text="REQUEST")
+    frame.grid(row=1, column=0, padx=80, pady=20)
+
+    request_type = StringVar()
+    request_type.set("(Choose Type)")
+
+    li = ["service status", "update records", "others"]
+
+    label = Label(frame, font=("Calibri", 20), text="Enter your Customer ID: ").grid(row=0, column=0, pady=15, padx=50,
+                                                                                     sticky=W)
+    label = Label(frame, font=("Calibri", 20), text="Request Type: ").grid(row=1, column=0, columnspan=2, pady=15,
+                                                                           padx=50, sticky=W)
+    label = Label(frame, font=("Calibri", 20), text="Please type your report/complain here: ").grid(row=2, column=0,
+                                                                                                    columnspan=2,
+                                                                                                    pady=15, padx=50,
+                                                                                                    sticky=W)
+
+    entry_id = Entry(frame, font=("Calibri", 18), width=30)
+    entry_id.grid(row=0, column=0, padx=20, pady=10, columnspan=2, sticky=E)
+
+    entry_type = OptionMenu(frame, request_type, *li)
+    entry_type.grid(row=1, column=0, padx=20, pady=10, columnspan=2)
+
+    text_field = Text(frame, font=("Calibri", 18), width=60, height=5)
+    text_field.grid(row=2, column=0, columnspan=2, padx=20, pady=10)
+
+    button_enter = Button(frame, font=("Calibri", 16), text="ENTER", bg="#B4B4B4",
+                          command=lambda: process_request(entry_id.get(), text_field.get("1.0", "end-1c"),
+                                                          request_type.get()), width=20).grid(row=3, column=0,
+                                                                                              columnspan=1, padx=20,
+                                                                                              pady=20, sticky=E)
+    button_back = Button(frame, font=("Calibri", 10), text="Back", bg="#B4B4B4",
+                         command=lambda: back(cust_care_screen)).grid(row=4, column=2, padx=20, pady=20, sticky=E)
+    button_exit = Button(frame, font=("Calibri", 10), text="Exit", bg="#B4B4B4",
+                         command=lambda: back(login_register)).grid(row=4, column=0, padx=20, pady=20, sticky=W)
+
+
+def process_request(cust_id, request, request_type):
+    global cust_care_screen
+    import request_admin as r
+    print(cust_id, request, request_type)
+    ##SAVE YOUR REQUEST FROM HERE
+    r.add_request(cust_id,request,request_type)
+
+    success = messagebox.showinfo("Success!", "Your Request/Complain has been recorded!\nClick OK to return to Menu")
+    if success == "ok":
+        cust_care_screen.destroy()
+
+
+def card_type_page(ac_no):
+    global image_f
+    global menu
+    global card_type_screen
+    global account_IDno
+
+    account_IDno = ac_no
+
+    card_type_screen = Toplevel()
+    card_type_screen.title("The Continental")
+    card_type_screen.iconbitmap("Icon.ico")
+    card_type_screen.geometry("530x455")
+
+    logo = Label(card_type_screen, image=image_f).grid(row=0, column=0, columnspan=3)
+
+    frame = LabelFrame(card_type_screen, text="Choose Card Type", padx=50, pady=50)
+    frame.grid(row=1, column=0, padx=110, pady=10)
+
+    global card_type_choice
+    card_type_choice = StringVar()
+    card_type_choice.set("CREDIT")
+
+    Radiobutton(frame, text="CREDIT", font=("Calibri", 22), variable=card_type_choice, value="CREDIT").grid(row=1,
+                                                                                                            column=1)
+    Radiobutton(frame, text="DEBIT", font=("Calibri", 22), variable=card_type_choice, value="DEBIT").grid(row=2,
+                                                                                                          column=1)
+    Butt_next = Button(frame, text="NEXT",
+                       command=lambda: next_page(card_type_screen, card_type=card_type_choice.get()),
+                       bg="#B4B4B4").grid(row=3, column=1)
+
+    Butt_exit = Button(card_type_screen, text="EXIT", command=lambda: back(menu, value="exit"), bg="#B4B4B4").grid(
+        row=4, column=0, sticky=W)
+    Butt_back = Button(card_type_screen, text="BACK", command=lambda: back(card_type_screen), bg="#B4B4B4").grid(row=4,
+                                                                                                                 column=0,
+                                                                                                                 sticky=E)
 
 
 
@@ -1008,11 +1073,9 @@ def check_eligible(screen):
             screen.destroy()
 
 
-
-def next_page(screen):
-    global variable
+def next_page(screen, card_type="CREDIT"):
     if screen == screen1:
-        global actype   ##THE VARIABLE FOR YOUR ACCOUNT TYPE USE THIS TO ADD TO SQL
+        global actype  ##THE VARIABLE FOR YOUR ACCOUNT TYPE USE THIS TO ADD TO SQL
         global choice
         actype = choice.get()
         if actype == "SAVINGS" or actype == "DEBIT":
@@ -1021,9 +1084,326 @@ def next_page(screen):
         else:
             screen.destroy()
             credit_page_form()
+
     elif screen == account_screen:
+        global variable
         variable = "logged_in"
         account_selection(variable)
+
+    elif screen == card_type_screen:
+        if card_type == "CREDIT":
+            screen.destroy()
+            credit_card_application_form(card_type)
+        else:
+            screen.destroy()
+            card_company(card_type)
+
+
+def credit_card_application_form(card_type):
+    global image_f
+    global card_page
+    global fn
+    global ln
+    global dob_wife
+    global phone_wife
+    global aadhar_wife
+    global occupation
+    global income_wife
+
+    fn = StringVar()
+    ln = StringVar()
+    dob_wife = StringVar()
+    phone_wife = StringVar()
+    aadhar_wife = StringVar()
+    occupation = StringVar()
+    income_wife = StringVar()
+
+    question_box = messagebox.askquestion("Option", "Would you like an additional card for your spouse ?")
+    if question_box == "yes":
+
+        card_page = Toplevel()
+        card_page.title("The Continental")
+        card_page.iconbitmap("Icon.ico")
+
+        logo = Label(card_page, image=image_f).grid(row=0, column=0, columnspan=3)
+
+        frame = LabelFrame(card_page, text="Fill in the Details", padx=50, pady=50)
+        frame.grid(row=1, column=0, padx=110, pady=10)
+
+        label_1 = Label(frame, font=("Calibri", 18), text="First Name: ").grid(row=0, column=0)
+        label_2 = Label(frame, font=("Calibri", 18), text="Last Name: ").grid(row=1, column=0)
+        label_3 = Label(frame, font=("Calibri", 18), text="DOB(YYYY-MM-DD): ").grid(row=2, column=0)
+        label_4 = Label(frame, font=("Calibri", 18), text="Phone: ").grid(row=3, column=0)
+        label_5 = Label(frame, font=("Calibri", 18), text="Aadhar ID: ").grid(row=4, column=0)
+        label_6 = Label(frame, font=("Calibri", 18), text="Occupation: ").grid(row=5, column=0)
+        label_7 = Label(frame, font=("Calibri", 18), text="Income: ").grid(row=6, column=0)
+
+        f1 = Entry(frame, font=("Calibri", 18), textvariable=fn, width=35)
+        f2 = Entry(frame, font=("Calibri", 18), textvariable=ln, width=35)
+        f3 = Entry(frame, font=("Calibri", 18), textvariable=dob_wife, width=35)
+        f4 = Entry(frame, font=("Calibri", 18), textvariable=phone_wife, width=35)
+        f5 = Entry(frame, font=("Calibri", 18), textvariable=aadhar_wife, width=35)
+        f6 = Entry(frame, font=("Calibri", 18), textvariable=occupation, width=35)
+        f7 = Entry(frame, font=("Calibri", 18), textvariable=income_wife, width=35)
+
+        f1.grid(row=0, column=1, pady=5)
+        f2.grid(row=1, column=1, pady=5)
+        f3.grid(row=2, column=1, pady=5)
+        f4.grid(row=3, column=1, pady=5)
+        f5.grid(row=4, column=1, pady=5)
+        f6.grid(row=5, column=1, pady=5)
+        f7.grid(row=6, column=1, pady=5)
+
+        Button_enter = Button(frame, text="ENTER", font=("Calibri", 18), bg="#B4B4B4",
+                              command= lambda : card_company_switch(card_type)).grid(row=7, column=1, pady=25)
+
+        Button_back = Button(card_page, text="Back", bg="#B4B4B4", command=lambda: back(card_page)).grid(row=14,
+                                                                                                         column=8,
+                                                                                                         sticky=E,
+                                                                                                         padx=50,
+                                                                                                         pady=25)
+        Button_exit = Button(card_page, text="Exit", bg="#B4B4B4", command=lambda: back(menu, value="exit")).grid(row=8,
+                                                                                                                  column=0,
+                                                                                                                  sticky=W,
+                                                                                                                  padx=50,
+                                                                                                                  pady=25)
+
+    else:
+        card_company(card_type)
+
+
+def card_company_switch(card_type):
+    card_page.destroy()
+    card_company(card_type)
+
+
+
+
+def card_company(card_type):
+    global image_f
+    global menu
+    global company_screen
+    global card_typo
+
+    card_typo = card_type
+
+    company_screen = Toplevel()
+    company_screen.title("The Continental")
+    company_screen.iconbitmap("Icon.ico")
+    company_screen.geometry("530x455")
+
+    logo = Label(company_screen, image=image_f).grid(row=0, column=0, columnspan=3)
+
+    frame = LabelFrame(company_screen, text="COMPANY", padx=50, pady=50)
+    frame.grid(row=1, column=0, padx=110, pady=10)
+
+    global visa_master
+    visa_master = StringVar()
+    visa_master.set("VISA")
+
+    Radiobutton(frame, text="MASTERCARD", font=("Calibri", 22), variable=visa_master, value="MASTERCARD").grid(row=1,
+                                                                                                               column=1)
+    Radiobutton(frame, text="VISA", font=("Calibri", 22), variable=visa_master, value="VISA").grid(row=2, column=1)
+    Butt_next = Button(frame, text="NEXT", command=lambda: store_cardtype(visa_master.get(), card_type),
+                       bg="#B4B4B4").grid(row=3, column=1)
+
+    Butt_exit = Button(company_screen, text="EXIT", command=lambda: back(menu, value="exit"), bg="#B4B4B4").grid(row=4,
+                                                                                                                 column=0,
+                                                                                                                 sticky=W)
+    Butt_back = Button(company_screen, text="BACK", command=lambda: back(company_screen), bg="#B4B4B4").grid(row=4,
+                                                                                                             column=0,
+                                                                                                             sticky=E)
+
+
+def store_cardtype(card, card_type):
+    global type_card
+    global visa_master
+    global company_screen
+    type_card = card_type  ##VARIABLE FOR CARD TYPE TAKEN
+
+    visa_master = card  ##VARIABLE FOR EITHER CREDIT OR DEBIT CARD
+    print(card_type)
+    print(card)
+    company_screen.destroy()
+    captcha_page("card_application",visa_master,type_card)
+
+
+def captcha_page(form,visa_master,type_card,screen = 'NA'):
+    global image_f
+    global captcha_screen
+    global image_cp
+    global image_refresh
+
+    captcha_screen = Toplevel()
+    captcha_screen.title("The Continental")
+    captcha_screen.iconbitmap("Icon.ico")
+
+    logo = Label(captcha_screen, image=image_f).grid(row=0, column=0, columnspan=3)
+
+    frame = LabelFrame(captcha_screen, text="ROBOT VERIFICATION", padx=50, pady=50)
+    frame.grid(row=1, column=0, padx=110, pady=10)
+
+    captcha_code = cp.create_captcha()
+
+    image_captcha = Image.open("pic.png")
+    image_captcha = image_captcha.resize((300, 104), Image.ANTIALIAS)
+    image_cp = ImageTk.PhotoImage(image_captcha)
+
+    captcha_label = Label(frame, image=image_cp).grid(row=0, column=1, columnspan=2)
+
+    label = Label(frame, font=("Calibri", 20), text="Enter: ").grid(row=1, column=0, padx=15)
+
+    entry_code = Entry(frame, font=("Calibri", 18))
+    entry_code.grid(row=1, column=1, columnspan=1)
+
+    image_refresh = Image.open("refresh.png")
+    image_refresh = ImageTk.PhotoImage(image_refresh)
+
+    refresh_button = Button(frame, image=image_refresh, command=lambda: refresh_captcha(form,visa_master,type_card,screen), bg="#B4B4B4").grid(row=1,
+                                                                                                                  column=2)
+
+    Butt_enter = Button(frame, font=("Calibri", 16), text="ENTER",
+                        command=lambda: check_captcha(form, captcha_code, entry_code.get(),visa_master,type_card,screen), bg="#B4B4B4").grid(row=3,
+                                                                                                                column=1)
+
+    Butt_back = Button(captcha_screen, text="BACK", command=lambda: back(captcha_screen, value=form),
+                       bg="#B4B4B4").grid(row=4, column=0, sticky=E, padx=50, pady=25)
+    print(captcha_code)
+
+
+def refresh_captcha(form,visa_master,type_card,screen = 'NA'):
+    global captcha_screen
+    captcha_screen.destroy()
+    captcha_page(form,visa_master,type_card,screen)
+
+
+def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'):
+    import cardlog as cl
+    global ID_info
+
+
+    if gen_code == entry_code:
+        if form == "register":
+            global variable
+            global choice
+            global incomeamt
+            global business_address
+            global ssno
+            global profitpa
+            global f_name
+            global l_name
+            global bday
+            global mailID
+            global password
+            global sex
+            global number
+            global ad
+            global cityID
+            global stateID
+            global aadharID
+            global pincode
+            global ID_info
+            global Password
+            import accounts as acnt
+            # global lis
+
+            ##DATAS FOR DATABASE MANAGEMENT
+
+            name = f_name.get() + " " + l_name.get()
+            dob = bday.get()
+            email = mailID.get()
+            passwd = password.get()
+            if sex.get() in ['male', 'Male']:
+                gender = 'M'
+            elif sex.get() in ['female', 'Female']:
+                gender = 'F'
+            else:
+                gender = 'O'
+            mobile = number.get()  # int
+            address = ad.get()
+            city = cityID.get()
+            state = stateID.get()
+            aadhar = int(aadharID.get())  # int
+            zipcode = int(pincode.get())  # int
+            ##You use your function for SQL anywhere here
+            if variable == "new_cust":
+                lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, passwd,
+                                variable, 'cstmr')
+            else:
+                ID_info = ID.get()
+                Password = Pass.get()
+                lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, Password,
+                                variable, ID_info)
+            acntype = choice.get()
+            if acntype == "CREDIT":
+                income = int(incomeamt.get())  # int
+                work_address = business_address.get()
+                security_number = int(ssno.get())  # int
+                profit = int(profitpa.get())  # int
+                acnt.addto_creditacnts(lis[0], lis[1], work_address, income, profit, security_number, income + profit,
+                                       0, 'NA')
+                acnt.addto_acnttype(lis[1], "Credit")
+
+            elif acntype == "DEBIT":
+                acnt.addto_acnttype(lis[1], "Debit")
+            else:
+                acnt.addto_acnttype(lis[1], "Savings")
+            ##Last Lines
+            mail.register_mail(str(email), lis[0], lis[1])
+            success = messagebox.showinfo("SUCCESS!",
+                                          f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
+            if success == "ok":
+                screen.destroy()
+                captcha_screen.destroy()
+
+        elif form == "card_application":
+            if type_card == "DEBIT":
+                cl.card_request(ID_info,accntid,visa_master,type_card)
+                success = messagebox.showinfo("Robot Verification Complete!", "Your card application has been submitted succesfully ! ")
+
+                if success == "ok":
+                    captcha_screen.destroy()
+            else:
+                global card_page
+                global fn
+                global ln
+                global dob_wife
+                global phone_wife
+                global aadhar_wife
+                global occupation
+                global income_wife
+                import accounts as acnt
+
+                try:
+                    wife_name = fn.get() + " " + ln.get()
+                    dob = dob_wife.get()  ##FOR THE TIME BEING I HAVE STORED THE VARIABLES OF THE WIFE HERE
+                    phone = int(
+                        phone_wife.get())  ##YOU CAN MAKE THEM GLOBAL AND THEN USE THESE VARIABLES AFTER THE CAPTCHA VERIFICATION
+                    aadhar = int(aadhar_wife.get())
+                    job = occupation.get()
+                    income = int(income_wife.get())
+                    cl.card_request(ID_info, accntid, visa_master, type_card, "yes")
+                    acnt.addto_spouse_credit_card_appl(ID_info, accntid, wife_name, dob, phone, aadhar, income,
+                                                       type_card, visa_master, job)
+                    success = messagebox.showinfo("Robot Verification Complete!",
+                                                  "Your card application has been submitted succesfully ! ")
+
+                    if success == "ok":
+                        captcha_screen.destroy()
+                except:
+                    cl.card_request(ID_info, accntid, visa_master, type_card)
+                    success = messagebox.showinfo("Robot Verification Complete!",
+                                                  "Your card application has been submitted succesfully ! ")
+
+                    if success == "ok":
+                        captcha_screen.destroy()
+
+
+
+
+    else:
+        error = messagebox.showerror("Error!", "Invalid Captcha, Try again")
+        refresh_captcha(form,visa_master,type_card,screen)
 
 
 ##FUNCTION EXECUTION
@@ -1037,6 +1417,12 @@ account_list = []
 deposit_withdraw_transfer_page = None
 amount_screen = None
 statement_screen = None
+cust_care_screen = None
+card_type_screen = None
+login_screen = None
+captcha_screen = None
+company_screen = None
+card_page = None
 
 intro()
 

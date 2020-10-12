@@ -126,12 +126,48 @@ def has_card(acntid):
         return False
     else:
         return True
-def block_card(cardno):
+def block_card(custid,accntid,cardno):
     import accounts as acnt
+    import transaction as txn
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''UPDATE cardlog SET status = "blocked" WHERE cardno = {cardno}''')
+    description = f'Card blocked due to security reasons'
+    txn.add_req_transac(description,custid,accntid,cardno)
     con1.commit()
+
+def get_allcards():
+    import accounts as acnt
+    connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = connection.cursor()
+    cur.execute('''SELECT cardno FROM acntcard;
+    ''')
+    result = cur.fetchall()
+    lis = []
+    for i in result:
+        for j in i:
+            lis.append(j)
+    return lis
+
+
+def card_request(custid,accntid,visa_master,type_card,spouse = "no"):
+    import request_admin as r
+    import transaction as txn
+    if spouse == "no":
+        request = f"Application submitted for {type_card} card on account(id):{accntid},card company:{visa_master}"
+        r.add_request(custid,request,"card_application",accntid)
+    else:
+        request = f"Application submitted for {type_card} card,for spouse too, on account(id):{accntid},card company:{visa_master}."
+        r.add_request(custid,request,"card_application")
+
+
+
+
+
+
+
+
+
 
 
 
