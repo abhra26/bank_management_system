@@ -1,5 +1,5 @@
-import accounts as acnt
-import transaction as txn
+from User_functions import accounts as acnt, transaction as txn
+
 
 def add_request(custid,request,req_type,accntid = 0):
     connect = acnt.establish_connection("localhost","root","vishal26","bank")
@@ -8,6 +8,7 @@ def add_request(custid,request,req_type,accntid = 0):
     cur.execute(f'''INSERT INTO request VALUES
     ('{custid}','{request}','{req_type}','{reqid}');''')
     connect.commit()
+    return reqid
 
 def admin_pass(password):
     if password == "admin":

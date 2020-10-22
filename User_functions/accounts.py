@@ -71,7 +71,7 @@ def get_status_account(accntid):
     txt = cur.fetchall()[0][0]
     return txt
 def block_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     custids = get_allcustid()
@@ -87,7 +87,7 @@ def block_cust(custid):
         return False
 
 def block_accntid(custid,accntid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accntids = get_allaccntid()
@@ -103,7 +103,7 @@ def block_accntid(custid,accntid):
         return False
 
 def open_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     custids = get_allcustid()
@@ -119,7 +119,7 @@ def open_cust(custid):
         return False
 
 def open_accntid(custid,accntid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accntids = get_allaccntid()
@@ -130,11 +130,12 @@ def open_accntid(custid,accntid):
         description = f'Account id {accntid} opened'
         txn.add_req_transac(description,custid,accntid)
         conection.commit()
+        return True
     else:
         return False
 
 def get_email(cardno='NA',custid='NA'):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     try:
@@ -154,12 +155,28 @@ def get_name(custid):
     result = cur.fetchone()[0]
     return result
 
+# def addto_spouse_credit_card_appl(cardno,custid,name,dob,aadhar,income,card_type,card_company,occupation):
+#     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
+#     cur = conection.cursor()
+#     cur.execute(f'''INSERT INTO card_applications VALUES
+#     ('{custid}',{accntid},'{name}','{dob}',{phone},{aadhar},{income},'{card_type}','{card_company}','{occupation}');''')
+#     conection.commit()
+
 def addto_spouse_credit_card_appl(custid,accntid,name,dob,phone,aadhar,income,card_type,card_company,occupation):
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO card_applications VALUES
     ('{custid}',{accntid},'{name}','{dob}',{phone},{aadhar},{income},'{card_type}','{card_company}','{occupation}');''')
     conection.commit()
+
+def addto_spouse_card(cardno,name,dob,aadhar,occupation,income,custid):
+    conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = conection.cursor()
+    cur.execute(f'''INSERT INTO spouse_credit_cards VALUES
+        ({cardno},'{name}','{dob}',{aadhar},'{occupation}',{income},'{custid}');''')
+    conection.commit()
+
+
 
 def get_allcustid():
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -185,8 +202,8 @@ def get_allaccntid():
 
 
 def delete_accnt(custid,accntid):
-    import cardlog as cl
-    import transaction as txn
+    from User_functions.card_function import cardlog as cl
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     if accntid in get_allaccntid():
@@ -213,7 +230,7 @@ def delete_accnt(custid,accntid):
     else:
         return False
 def delete_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     if custid in get_allcustid():
@@ -228,7 +245,7 @@ def delete_cust(custid):
     else:
         return False
 def update_users(custid,field,new_data,accntid = 0):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     field = field.lower()
@@ -262,7 +279,7 @@ def update_users(custid,field,new_data,accntid = 0):
             return False
 
 def update_creditacnt(custid,field,new_data,accntid=0):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     field = field.lower()
@@ -293,7 +310,7 @@ def update_creditacnt(custid,field,new_data,accntid=0):
         else:
             return False
 def update_spouse_details(custid,field,new_data):
-    import transaction as txn
+    from User_functions import transaction as txn
     d = {"Spouse's Name":"name","Spouse's Aadhar":"aadhar", "Spouse's Occupation":"occupation", "Spouse's Income":"income"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -340,15 +357,29 @@ def get_details_spouse(lis,custid):
          "Spouse's Income": "income"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
+    cur.execute('''SELECT custid FROM spouse_credit_cards;''')
+    out = cur.fetchall()
+    c = []
+    for k in out:
+        for l in k:
+            c.append(l)
     result = []
-    for i in lis:
-        j = i[0:len(i)-1]
-        cur.execute(f'''SELECT {j.lower()} FROM spouse_credit_cards WHERE custid = '{custid}';''')
-        output = cur.fetchall()
-        result.append(str(output[0][0]))
+    if custid in c:
+        for i in lis:
+            j = i[0:len(i)-1]
+            cur.execute(f'''SELECT {j.lower()} FROM spouse_credit_cards WHERE custid = '{custid}';''')
+            output = cur.fetchall()
+            result.append(str(output[0][0]))
+    else:
+        for i in lis:
+            j = i[0:len(i) - 1]
+            cur.execute(f'''SELECT {j.lower()} FROM card_applications WHERE custid = '{custid}';''')
+            output = cur.fetchall()
+            result.append(str(output[0][0]))
+
     return result
 def get_details_accounts(lis,custid):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accounts = getno_of_acnts(custid)

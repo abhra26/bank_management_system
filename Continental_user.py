@@ -2,12 +2,39 @@
 
 from tkinter import *
 from PIL import ImageTk, Image
-import login as lg
-from tkinter import messagebox
-import signup as sg
-import sys
-import otp_email_sender_yagmail as mail
+from User_functions import login as lg, signup as sg
 import captcha_project as cp
+from tkinter import messagebox
+import sys
+from User_functions.emailserver import otp_email_sender_yagmail as mail
+
+print('''
+......WELCOME TO CONTINENTAL BANK......
+published by : @abhraneel_saha, @arijeet_pramanik,@kunj_gupta
+Description : It is a local virtual bank management system set up
+              to describe the python-mysql interface. This is our
+              submission for the computer project assignment for 
+              the accademic session of 2020-21 of class XII. Stay safe and healthy.
+              Please do listen our explaination. Thank you.
+
+XXXXXXXX SPECIFICATIONS XXXXXXXXX
+
+# Developed on : MACBOOK PRO,
+                 13inches, 
+                 8GB RAM, 
+                 512GB internal memory,
+                 MACOS mojave, 
+                 intel core i5 
+
+#FRONT END : Tkinter
+#MIDDLE-WARE: PYTHON
+#BACKEND : MYSQL
+
+XXXXXXXX END XXXXXXXXX
+
+........PROGRAM BEGINS FROM HERE.......
+''')
+
 ID_info = ""
 ID_info_initial = []
 volatile = 0
@@ -102,7 +129,7 @@ def login():
     global entry1
     global entry2
     global account_list
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global login_screen
     global volatile
     global ID_info_initial
@@ -110,26 +137,33 @@ def login():
     ID_info_initial.append(ID_info)
     account_list = acnt.getno_of_acnts(ID_info)  ##I GAVE THIS TO RUN FOR NOW, YOU FILL UP THIS LIST HERE
     # ALSO DO ONE THING TRY TO STORE THIS AS GLOBAL VARIABLE IT HELPS IN BACK BUTTON
-    status = acnt.get_status_account(account_list[0])
-    name = acnt.get_name(ID_info)
-
-    if status == 'open':
-        if check_login():
-            message = messagebox.showinfo("LOGGED IN", f"Welcome {name}.", icon="info")
-            if message == "ok":
-                login_register.destroy()
-                accounts()
+    try:
+        status = acnt.get_status_account(account_list[0])
+        name = acnt.get_name(ID_info)
+        if status == 'open':
+            if check_login():
+                message = messagebox.showinfo("LOGGED IN", f"Welcome {name}.", icon="info")
+                if message == "ok":
+                    login_register.destroy()
+                    accounts()
+            else:
+                message = messagebox.showerror("ERROR!", "Login Unsuccessful. \nTry Again")
+                if message == "ok":
+                    entry2.delete(0, END)
         else:
-            message = messagebox.showerror("ERROR!", "Login Unsuccessful. \nTry Again")
-            if message == "ok":
-                entry2.delete(0, END)
-    else:
-        error = messagebox.showerror("ALERT!",
+            error = messagebox.showerror("ALERT!",
                                      f"Your customer id is {status}\n Please contact customer care for more details")
-        if error == 'ok':
-            sys.exit(0)
+            if error == 'ok':
+                sys.exit(0)
+            else:
+                pass
+    except:
+        message = messagebox.showerror("ERROR!", "Login Unseccessful. \nTry Again")
+        if message == 'ok':
+            pass
         else:
             pass
+
 
 ##LOGIN VERIFICATION
 
@@ -137,27 +171,30 @@ def check_login():
     global ID_info  # This is the Login_Id that will be stored
     global Password
     global wrong_login
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global login_register
     global ID_info_initial
     ID_info = str(ID.get())
     Password = int(Pass.get())
-    if lg.login(ID_info,Password):
-        return True
-    elif ID_info_initial[wrong_login]==ID_info:
-        wrong_login+=1
-        if wrong_login == 4:
-            acnt.block_cust(ID_info)
-            mail.status_email(acnt.get_email(custid=ID_info),'customer id')
-            error = messagebox.showerror("ALERT!",
-                        "You have entered the login details wrong 4 times\n YOUR ACCOUNT HAS BEEN BLOCKED\n Please contact customer care for more details")
-            wrong_login = 0
-            ID_info_initial = []
+    try:
+        if lg.login(ID_info,Password):
+            return True
+        elif ID_info_initial[wrong_login]==ID_info:
+            wrong_login+=1
+            if wrong_login == 4:
+                acnt.block_cust(ID_info)
+                mail.status_email(acnt.get_email(custid=ID_info),'customer id')
+                error = messagebox.showerror("ALERT!",
+                            "You have entered the login details wrong 4 times\n YOUR ACCOUNT HAS BEEN BLOCKED\n Please contact customer care for more details")
+                wrong_login = 0
+                ID_info_initial = []
 
+            else:
+                return False
         else:
+            wrong_login = 1
             return False
-    else:
-        wrong_login = 1
+    except:
         return False
 
 
@@ -228,7 +265,7 @@ def credit_page_form():
 
     # Labels and Inputs
 
-    label_income = Label(frame, font=("Calibri", 20), text="Income: \n(Per Annum)", height=2).grid(row=0, column=0)
+    label_income = Label(frame, font=("Calibri", 20), text="Income: RS.\n(Per Annum)", height=2).grid(row=0, column=0)
     label_businessaddress = Label(frame, font=("Calibri", 20), text="Business/Work Address: ", height=2).grid(row=1,
                                                                                                               column=0)
     label_socialsecno = Label(frame, font=("Calibri", 20), text="Social Security : \nNumber", height=2).grid(row=2,
@@ -363,23 +400,16 @@ def register_page():
     Button_exit = Button(register_screen, text="Exit", highlightbackground="#B4B4B4", command=lambda: back(login_register)).grid(row=14,
                                                                                                                 column=0,
                                                                                                                 sticky=W)
-
-
-
 ##REGISTRATION PROCESS AND CONFIRMATION
-##YOU HAVE YOUR WORK HERE
+
 def register(screen):
     screen.destroy()
     captcha_page("register","na","na",screen)
 
-
-
-
-
 ###ACOUNTS LIST SCREEN
 
 def accounts():
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global account_screen
     global ID_info
     account_screen = Tk()
@@ -423,7 +453,7 @@ def get_account(ac_no):
     global image_f
     global menu
     global accntid
-    import accounts as acnt
+    from User_functions import accounts as acnt
     accntid = ac_no
     status = acnt.get_status_account(accntid)
 
@@ -563,7 +593,7 @@ def deposit_withdraw_transfer(mode="withdraw"):
     global receiver_ac
     global entry_receiver
     global accntid
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
 
     if cl.has_card(accntid):
         c_no = IntVar()
@@ -700,7 +730,7 @@ def withdraw_or_deposit_value(mode):
     global typo
     global amt_value
     global receiver_ac
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
 
     card_number = int(c_no.get())  # int
     expiry_date = expiry.get()  # string
@@ -752,7 +782,7 @@ def check_card(mode="withdraw"):
     global typo
     global receiver_ac
     global entry_receiver
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global menu
     global card_number_initial
 
@@ -794,9 +824,9 @@ def check_card(mode="withdraw"):
 
 
 def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global wrong_credentials
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global card_number_initial
     if cl.check_details(card_number,expiry_date,cvv,card_type):
         card_number_initial = []
@@ -819,8 +849,8 @@ def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
 
 
 def statement_page(ac_no):
-    import transaction as txn
-    import cardlog as cl
+    from User_functions import transaction as txn
+    from User_functions.card_function import cardlog as cl
     global image_f
     global statement_screen
 
@@ -871,7 +901,7 @@ def statement_page(ac_no):
 def otp_page(amount, card_number, receiver_ac_id, mode):
     global otp_screen
     global image_f
-    import accounts as acnt
+    from User_functions import accounts as acnt
 
     otp = mail.otp_mail(acnt.get_email(card_number))
     otp_screen = Toplevel()
@@ -906,9 +936,7 @@ def otp_page(amount, card_number, receiver_ac_id, mode):
 
 
 def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
-    import cardlog as cl
-    import transaction as txn
-    import accounts as acnt
+    from User_functions import transaction as txn
     if generated == entered:
         success = messagebox.showinfo("Success!",
                                       "OTP Verification Complete!\nYour Transaction is being processed.\nClick OK to return to confirm finally")
@@ -932,7 +960,7 @@ def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
 
 
 def balance_page(accntid):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     try:
         balance = cl.get_balance(accntid)
         message = messagebox.showinfo("BALANCE",f"Your current balance is{balance}")
@@ -996,7 +1024,7 @@ def cust_care_page():
 
 def process_request(cust_id, request, request_type):
     global cust_care_screen
-    import request_admin as r
+    from admin_functions import request_admin as r
     print(cust_id, request, request_type)
     ##SAVE YOUR REQUEST FROM HERE
     r.add_request(cust_id,request,request_type)
@@ -1045,7 +1073,7 @@ def card_type_page(ac_no):
 
 
 def check_eligible(screen):
-    import signup as sg
+    import User_functions.signup as sg
     global incomeamt
     global business_address
     global ssno
@@ -1057,20 +1085,25 @@ def check_eligible(screen):
     work_address = business_address.get()
     security_number = int(ssno.get()) # int
     profit = int(profitpa.get())  # int
+    try:
+        if sg.eligibility_credit(income):
 
-    ## YOU MIGHT NEED TO SHIFT THIS SUCCES BOX IN IF STATEMENT, THE SUCCES AND NON SUCCES YOU DO IT(If it's not success, then simple message box and no conditions, pass)
-    if sg.eligibility_credit(income):
+            success = messagebox.showinfo("SUCCESS!","Good News!\n You are eligible for a credit account!\nClick Ok to go to next page")
 
-        success = messagebox.showinfo("SUCCESS!","Good News!\n You are eligible for a credit account!\nClick Ok to go to next page")
-
-        if success == "ok":
-            screen.destroy()
-            register_page()
-    else:
-        success = messagebox.showinfo("OOPS!",
+            if success == "ok":
+                screen.destroy()
+                register_page()
+        else:
+            success = messagebox.showinfo("OOPS!",
                                        "You are not eligible for a credit account!\nClick Ok to go to previous page")
-        if success == "ok":
-            screen.destroy()
+            if success == "ok":
+                screen.destroy()
+    except:
+        error = messagebox.showerror("ERROE!","Please cheack if you have entered your details properly, or not.")
+        if error == 'ok':
+            pass
+        else:
+            pass
 
 
 def next_page(screen, card_type="CREDIT"):
@@ -1278,9 +1311,10 @@ def refresh_captcha(form,visa_master,type_card,screen = 'NA'):
 
 
 def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global ID_info
-
+    import User_functions.emailserver.otp_email_sender_yagmail as mail
+    from User_functions import accounts as acnt
 
     if gen_code == entry_code:
         if form == "register":
@@ -1304,61 +1338,64 @@ def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'
             global pincode
             global ID_info
             global Password
-            import accounts as acnt
             # global lis
 
             ##DATAS FOR DATABASE MANAGEMENT
-
-            name = f_name.get() + " " + l_name.get()
-            dob = bday.get()
-            email = mailID.get()
-            passwd = password.get()
-            if sex.get() in ['male', 'Male']:
-                gender = 'M'
-            elif sex.get() in ['female', 'Female']:
-                gender = 'F'
-            else:
-                gender = 'O'
-            mobile = number.get()  # int
-            address = ad.get()
-            city = cityID.get()
-            state = stateID.get()
-            aadhar = int(aadharID.get())  # int
-            zipcode = int(pincode.get())  # int
+            try:
+                name = f_name.get() + " " + l_name.get()
+                dob = bday.get()
+                email = mailID.get()
+                passwd = password.get()
+                if sex.get() in ['male', 'Male']:
+                    gender = 'M'
+                elif sex.get() in ['female', 'Female']:
+                    gender = 'F'
+                else:
+                    gender = 'O'
+                mobile = number.get()  # int
+                address = ad.get()
+                city = cityID.get()
+                state = stateID.get()
+                aadhar = int(aadharID.get())  # int
+                zipcode = int(pincode.get())  # int
             ##You use your function for SQL anywhere here
-            if variable == "new_cust":
-                lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, passwd,
+                if variable == "new_cust":
+                    lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, passwd,
                                 variable, 'cstmr')
-            else:
-                ID_info = ID.get()
-                Password = Pass.get()
-                lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, Password,
+                else:
+                    ID_info = ID.get()
+                    Password = Pass.get()
+                    lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, Password,
                                 variable, ID_info)
-            acntype = choice.get()
-            if acntype == "CREDIT":
-                income = int(incomeamt.get())  # int
-                work_address = business_address.get()
-                security_number = int(ssno.get())  # int
-                profit = int(profitpa.get())  # int
-                acnt.addto_creditacnts(lis[0], lis[1], work_address, income, profit, security_number, income + profit,
+                acntype = choice.get()
+                if acntype == "CREDIT":
+                    income = int(incomeamt.get())  # int
+                    work_address = business_address.get()
+                    security_number = int(ssno.get())  # int
+                    profit = int(profitpa.get())  # int
+                    acnt.addto_creditacnts(lis[0], lis[1], work_address, income, profit, security_number, income + profit,
                                        0, 'NA')
-                acnt.addto_acnttype(lis[1], "Credit")
+                    acnt.addto_acnttype(lis[1], "Credit")
 
-            elif acntype == "DEBIT":
-                acnt.addto_acnttype(lis[1], "Debit")
-            else:
-                acnt.addto_acnttype(lis[1], "Savings")
+                elif acntype == "DEBIT":
+                    acnt.addto_acnttype(lis[1], "Debit")
+                else:
+                    acnt.addto_acnttype(lis[1], "Savings")
             ##Last Lines
-            mail.register_mail(str(email), lis[0], lis[1])
-            success = messagebox.showinfo("SUCCESS!",
+                mail.register_mail(str(email), lis[0], lis[1])
+                success = messagebox.showinfo("SUCCESS!",
                                           f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
-            if success == "ok":
-                screen.destroy()
-                captcha_screen.destroy()
+                if success == "ok":
+                    screen.destroy()
+                    captcha_screen.destroy()
+            except:
+                error = messagebox.showerror("ERROR 404!","REGISTRATION FAILED")
+                sys.exit(0)
 
         elif form == "card_application":
             if type_card == "DEBIT":
-                cl.card_request(ID_info,accntid,visa_master,type_card)
+                reqid = cl.card_request(ID_info,accntid,visa_master,type_card)
+                mail.card_application_mail(acnt.get_email(custid=ID_info),ID_info,accntid,reqid)
                 success = messagebox.showinfo("Robot Verification Complete!", "Your card application has been submitted succesfully ! ")
 
                 if success == "ok":
@@ -1372,26 +1409,27 @@ def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'
                 global aadhar_wife
                 global occupation
                 global income_wife
-                import accounts as acnt
+                from User_functions import accounts as acnt
 
                 try:
                     wife_name = fn.get() + " " + ln.get()
                     dob = dob_wife.get()  ##FOR THE TIME BEING I HAVE STORED THE VARIABLES OF THE WIFE HERE
-                    phone = int(
-                        phone_wife.get())  ##YOU CAN MAKE THEM GLOBAL AND THEN USE THESE VARIABLES AFTER THE CAPTCHA VERIFICATION
+                    phone = int(phone_wife.get())  ##YOU CAN MAKE THEM GLOBAL AND THEN USE THESE VARIABLES AFTER THE CAPTCHA VERIFICATION
                     aadhar = int(aadhar_wife.get())
                     job = occupation.get()
                     income = int(income_wife.get())
-                    cl.card_request(ID_info, accntid, visa_master, type_card, "yes")
+                    reqid = cl.card_request(ID_info, accntid, visa_master, type_card, "yes")
                     acnt.addto_spouse_credit_card_appl(ID_info, accntid, wife_name, dob, phone, aadhar, income,
                                                        type_card, visa_master, job)
+                    mail.card_application_mail(acnt.get_email(custid=ID_info), ID_info, accntid, reqid)
                     success = messagebox.showinfo("Robot Verification Complete!",
                                                   "Your card application has been submitted succesfully ! ")
 
                     if success == "ok":
                         captcha_screen.destroy()
                 except:
-                    cl.card_request(ID_info, accntid, visa_master, type_card)
+                    reqid = cl.card_request(ID_info, accntid, visa_master, type_card)
+                    mail.card_application_mail(acnt.get_email(custid=ID_info), ID_info, accntid, reqid)
                     success = messagebox.showinfo("Robot Verification Complete!",
                                                   "Your card application has been submitted succesfully ! ")
 

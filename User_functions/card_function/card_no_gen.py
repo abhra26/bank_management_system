@@ -1,10 +1,5 @@
 import random
 import math
-import accounts as acnt
-import cardlog as cl
-
-
-
 
 
 def check(x):
@@ -53,6 +48,15 @@ def generate_card(type,lis):
         return visa(lis)
     else:
         return mastercard(lis)
+def cvv():
+    import random
+    cvv = random.randint(100,999)
+    return cvv
+def expiry():
+    import random
+    year = random.randint(2021,2050)
+    month = random.randint(1,12)
+    return str(year)+'-'+str(month)
 
 
 '''Instruction:

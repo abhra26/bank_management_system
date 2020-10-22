@@ -1,7 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
-import captcha_project as cp
 from tkinter import ttk
 
 
@@ -42,7 +41,7 @@ def admin_login():
 
 def check_admin_login(password, entry):
     global login_page
-    import request_admin as r
+    from admin_functions import request_admin as r
 
     if r.admin_pass(password):
         success = messagebox.showinfo("Logged In!", "Welcome Admin.")
@@ -86,6 +85,8 @@ def home_page():
                            padx=120).grid(row=2, column=0, padx=40, pady=40, columnspan=1)
     button_email = Button(frame, font=("Calibri", 18), text="Email", bg="#B4B4B4", command=dm_cust, padx=120).grid(
         row=2, column=1, padx=40, pady=40, columnspan=1)
+    button_assn = Button(frame, font=("Calibri", 18), text="Assign Card", bg="#B4B4B4", command=card_assn_page,
+                         padx=80).grid(row=3, column=0, columnspan=2, padx=40, pady=40)
 
     button_back = Button(home_screen, font=("Calibri", 10), text="Back", bg="#B4B4B4",
                          command=lambda: back(home_screen)).grid(row=4, column=1, padx=20, pady=10, sticky=E)
@@ -94,7 +95,6 @@ def home_page():
                                                                                sticky=W)
 
     home_screen.mainloop()
-
 
 def service_status_page():
     global image_f
@@ -148,7 +148,7 @@ def service_status_page():
 
 
 def block_user(cust_id, acc_id, entry_1, entry_2):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -171,7 +171,7 @@ def block_user(cust_id, acc_id, entry_1, entry_2):
 
 
 def open_user(cust_id, acc_id, entry_1, entry_2):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -193,7 +193,7 @@ def open_user(cust_id, acc_id, entry_1, entry_2):
 
 
 def delete_user(cust_id, acc_id, entry_1, entry_2):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -245,7 +245,7 @@ def card_application_page():
 
 
 def switch_screen(cust):
-    import transaction as txn
+    from User_functions import transaction as txn
 
     li = txn.requeststatement(cust)  ##GET ME THE REQUESTS IN THIS LI DICTIONARY
     request_page(li, cust)
@@ -316,12 +316,18 @@ def edit_request_page(li, cust):
 
 
 def change_requests(cust, l_checked, l_notchecked):
-    import transaction as txn
+    from User_functions import transaction as txn
+    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    from User_functions import accounts as acnt
     for i in l_checked:
         lis = i.split()
         s = lis[0]
         reqid = s[0:(len(s)-1)]
+        lis2 = reqid.split('.')
+        mail.request_complete_email_card(acnt.get_email(custid=cust),reqid,'You have been sent a mail regarding your new transaction card.\nIF NOT RECIEVED WITHIN 24HRS PLEASE CONTACT CUSTOMER CARE IMMEDIATELY.')
         txn.delete_request_requesttab(reqid)
+        desc = f'Card assigned to customer id: {cust},account: {lis2[-1]}'
+        txn.add_req_transac(desc,cust,lis2[-1])
 
 
 def update_records_page():
@@ -374,8 +380,9 @@ def update_records_page():
 
 
 def update_process(cust, acc, field, new_data):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global update_screen
+    from User_functions.emailserver import otp_email_sender_yagmail as mail
 
     cust_id = str(cust)
     if acc == '':
@@ -387,6 +394,8 @@ def update_process(cust, acc, field, new_data):
         if field in ["Name", "DOB", "Email", "Passwd", "Mobile", "Address", "City", "State", "Zipcode", "Aadhar"]:
             result = acnt.update_users(cust_id,field,new_data,ac_id)
             if result:
+                content = f"Your {field} has been unpdated to {new_data}"
+                mail.general_mail(acnt.get_email(custid = cust_id),content)
                 success = messagebox.showinfo("Success!",
                                               "The Data for Customer_ID: " + cust + "\nAccount_ID: " + acc + "\nField: " + field + "\n\nHas been changed")
                 if success == "ok":
@@ -397,6 +406,8 @@ def update_process(cust, acc, field, new_data):
         elif field in ["Business", "ssn", "Profit"]:
             result = acnt.update_creditacnt(cust_id,field,new_data,ac_id)
             if result:
+                content = f"Your {field} has been unpdated to {new_data}"
+                mail.general_mail(acnt.get_email(custid=cust_id), content)
                 success = messagebox.showinfo("Success!",
                                               "The Data for Customer_ID: " + cust + "\nAccount_ID: " + acc + "\nField: " + field + "\n\nHas been changed")
                 if success == "ok":
@@ -406,6 +417,8 @@ def update_process(cust, acc, field, new_data):
         else:
             result = acnt.update_spouse_details(cust_id,field,new_data)
             if result:
+                content = f"Your {field} has been unpdated to {new_data}"
+                mail.general_mail(acnt.get_email(custid=cust_id), content)
                 success = messagebox.showinfo("Success!",
                                               "The Data for Customer_ID: " + cust + "\nAccount_ID: " + acc + "\nField: " + field + "\n\nHas been changed")
                 if success == "ok":
@@ -473,7 +486,7 @@ def show_cust_details(cust):  ##CUST ID IS A STRING HERE SO IF YOU WANNA CHANGE 
     global cust_screen
     global image_f
     global details_screen
-    import accounts as acnt
+    from User_functions import accounts as acnt
 
     cust_screen.destroy()
 
@@ -542,7 +555,6 @@ def show_cust_details(cust):  ##CUST ID IS A STRING HERE SO IF YOU WANNA CHANGE 
         n += 1
 
         l3 = ["Name:", "DOB:", "Aadhar:", "Occupation:", "Income:"]
-
         wife_details = acnt.get_details_spouse(l3,str(cust)) ##GET THE WIFE DETAILS IN THIS LIST
 
         d3 = {}
@@ -597,7 +609,7 @@ def show_cust_details(cust):  ##CUST ID IS A STRING HERE SO IF YOU WANNA CHANGE 
 
 
 def has_credit(cust):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     conection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT custid FROM creditacnts;''')
@@ -613,7 +625,7 @@ def has_credit(cust):
 
 
 def has_wife(cust):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     conection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT custid FROM spouse_credit_cards;''')
@@ -622,7 +634,14 @@ def has_wife(cust):
     for i in out:
         for j in i:
             fi.append(j)
-    if str(cust) in fi:
+    cur.execute(f'''SELECT custid FROM card_applications;''')
+    out2 = cur.fetchall()
+    fi2 = []
+    for i in out2:
+        for j in i:
+            fi2.append(j)
+
+    if str(cust) in fi+fi2:
         return True
     else:
         return False
@@ -632,7 +651,7 @@ def others_page():
     # Sitka Subheading
     global others_screen
     global image_f
-    import request_admin as r
+    from admin_functions import request_admin as r
 
     others_screen = Toplevel()
     others_screen.title("The Continental")
@@ -721,10 +740,10 @@ def reply_page(n, cust_list):
 
 def send_reply(request, reply):  ## YORU NEEDED PARAMETERS
     global reply_screen
-    import request_admin as r
-    import otp_email_sender_yagmail as mail
-    import transaction as txn
-    import accounts as acnt
+    from admin_functions import request_admin as r
+    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    from User_functions import transaction as txn
+    from User_functions import accounts as acnt
     message = messagebox.askquestion("Confirm", "Do you wish to proceed ?")
 
     if message == "yes":
@@ -777,8 +796,8 @@ def dm_cust():
 
 def process_dm(cust_id, text):
     global dm_screen
-    import accounts as acnt
-    import otp_email_sender_yagmail as mail
+    from User_functions import accounts as acnt
+    from User_functions.emailserver import otp_email_sender_yagmail as mail
     print(cust_id, text)
     ##SAVE YOUR REQUEST FROM HERE
 
@@ -793,6 +812,112 @@ def process_dm(cust_id, text):
         pass
 
 
+def card_assn_page():
+    global assn_screen
+    global image_f
+
+    assn_screen = Toplevel()
+    assn_screen.title("The Continental")
+    assn_screen.iconbitmap("Icon.ico")
+
+    logo = Label(assn_screen, image=image_f).grid(row=0,column=0,columnspan=3)
+
+    frame = LabelFrame(assn_screen, text = "UPDATE")
+    frame.grid(row=1, column=0, padx=80, pady=20)
+
+
+    label1 = Label(frame, font=("Calibri",18), text = "Cust ID: ").grid(row=0, column=0,pady=15,padx=10)
+    label2 = Label(frame, font=("Calibri",18), text = "Accnt ID: ").grid(row=2, column=0,pady=15,padx=10)
+    label3 = Label(frame, font=("Calibri",18), text = "Card institution: ").grid(row=3, column=0,pady=15,padx=10)
+    label4 = Label(frame, font=("Calibri",18), text = "Transaction Type: ").grid(row=4, column=0,pady=15,padx=10)
+
+    entry_1 = Entry(frame, font=("Calibri",18))
+    entry_1.grid(row = 0, column =1, pady=15, padx=30)
+
+    entry_2 = Entry(frame, font=("Calibri",18))
+    entry_2.grid(row = 2, column =1, pady=15, padx=30)
+
+    l1 = ["User", "Spouse", "Both"]
+
+    variable = StringVar()
+
+    w = OptionMenu(frame, variable, *l1)
+    variable.set("(Account Holder)")
+    w.grid(row = 1, column =1, pady=15, padx=30)
+
+    card_var = StringVar()
+
+    l2 = ["Master", "Visa"]
+    x = OptionMenu(frame, card_var, *l2)
+    card_var.set("(Choose)")
+    x.grid(row = 3, column =1, pady=15, padx=30)
+
+    cd = StringVar()
+
+    l3 = ["Credit", "Debit"]
+    y = OptionMenu(frame, cd, *l3)
+    cd.set(" (Choose) ")
+    y.grid(row = 4, column =1, pady=15, padx=30)
+
+
+    butt = Button(frame, text = "Assign",font=("Calibri",16), bg = "#B4B4B4", command =lambda: assn_card(entry_1.get(), entry_2.get(), variable.get(), card_var.get(), cd.get())).grid(row=5, column =1,padx=20,pady=30,sticky =W)
+
+    button_back = Button(assn_screen, font=("Calibri",10), text = "Back", bg="#B4B4B4", command =lambda: back(assn_screen)).grid(row = 6, column=0, padx=20, pady=10, sticky= E)
+    button_exit = Button(assn_screen, font=("Calibri",10), text = "Exit", bg="#B4B4B4", command =lambda: back(home_screen, value="exit")).grid(row = 6, column=0, padx=20, pady=10, sticky= W)
+
+def assn_card(cust, accnt, holder, card_com, cred_deb):
+    global assn_screen
+    from User_functions import accounts as acnt
+    from User_functions.card_function import cardlog as cl
+    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    import random
+    print(cust, accnt, holder, card_com, cred_deb)
+    if card_com in ['Visa','visa','VISA']:
+        card_com = 'visa'
+    else:
+        card_com = 'mastercard'
+    question = messagebox.askquestion("Confirm!", "Do you wish to proceed ?")
+    if question == "yes":
+        if holder in ["user","USER","User"]:
+            details = cl.generate_creditcard(card_com)
+            pin = random.randint(1000,9999)
+            acnt.addto_acntcard(int(accnt),details[0],cred_deb)
+            cl.addto_cardlog(details[0],details[1],details[2],card_com,pin)
+            mail.card_assign_mail(acnt.get_email(custid=cust),details[0],accnt,cust,details[1],details[2],200000,pin,card_com,cred_deb)
+            success = messagebox.showinfo("Success!", "Card Successfully Assigned!")
+            if success == "ok":
+                assn_screen.destroy()
+        elif holder in ["Both","BOTH","Both"]:
+            details = cl.generate_creditcard(card_com)
+            pin = random.randint(1000, 9999)
+            acnt.addto_acntcard(int(accnt), details[0], cred_deb)
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+                                  pin, card_com, cred_deb)
+            details = cl.generate_creditcard(card_com)
+            pin = random.randint(1000, 9999)
+            acnt.addto_acntcard(int(accnt), details[0], cred_deb,)
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
+            spouse = acnt.get_details_spouse(['name:','dob:','aadhar:','income:','occupation:'],cust)
+            acnt.addto_spouse_card(details[0],spouse[0],spouse[1],spouse[2],spouse[4],spouse[3],cust)
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+                                  pin, card_com, cred_deb)
+        else:
+            details = cl.generate_creditcard(card_com)
+            pin = random.randint(1000, 9999)
+            acnt.addto_acntcard(int(accnt), details[0], cred_deb)
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
+            spouse = acnt.get_details_spouse(['name:', 'dob:', 'aadhar:', 'income:', 'occupation:'], cust)
+            acnt.addto_spouse_card(details[0], spouse[0], spouse[1], spouse[2], spouse[4], spouse[3], cust)
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+                                  pin, card_com, cred_deb)
+
+        success = messagebox.showinfo("Success!", "Card Successfully Assigned!")
+        if success == "ok":
+            assn_screen.destroy()
+    else:
+        pass
+
 def back(screen, value="back"):
     global login_page
     global home_screen
@@ -803,6 +928,7 @@ def back(screen, value="back"):
     global details_screen
     global reply_screen
     global dm_screen
+    global assn_screen
 
     if screen == login_page:
         warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ? ?")
@@ -826,7 +952,7 @@ def back(screen, value="back"):
             else:
                 pass
 
-    elif screen == service_status_screen or screen == card_app_screen or screen == update_screen or screen == cust_screen or screen == others_screen or screen == dm_screen:
+    elif screen == service_status_screen or screen == card_app_screen or screen == update_screen or screen == cust_screen or screen == others_screen or screen == dm_screen or screen == assn_screen:
         screen.destroy()
 
     elif screen == requests_screen:
@@ -853,7 +979,7 @@ details_screen = None
 others_screen = None
 reply_screen = None
 dm_screen = None
+assn_screen = None
 
 admin_login()
-
-
+##

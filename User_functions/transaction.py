@@ -22,9 +22,9 @@ def gen_tid(cardno,datetime,file="utids"):
 
 
 def withdraw(amount,cardno):
-    import cardlog as cl
-    import otp_email_sender_yagmail as email
-    import accounts as acnt
+    from User_functions.card_function import cardlog as cl
+    from User_functions.emailserver import otp_email_sender_yagmail as email
+    from User_functions import accounts as acnt
     accntid = cl.get_accntid(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance - amount
@@ -38,9 +38,9 @@ def withdraw(amount,cardno):
         return f"Insufficient funds, balance={in_balance}"
 
 def deposit(amount,cardno):
-    import cardlog as cl
-    import otp_email_sender_yagmail as email
-    import accounts as acnt
+    from User_functions.card_function import cardlog as cl
+    from User_functions.emailserver import otp_email_sender_yagmail as email
+    from User_functions import accounts as acnt
     accntid = cl.get_accntid(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance + amount
@@ -51,9 +51,9 @@ def deposit(amount,cardno):
     return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id {details[1]}"
 
 def transfer(amount,cardno_parent,child):
-    import cardlog as cl
-    import otp_email_sender_yagmail as email
-    import accounts as acnt
+    from User_functions.card_function import cardlog as cl
+    from User_functions.emailserver import otp_email_sender_yagmail as email
+    from User_functions import accounts as acnt
     parent = cl.get_accntid(cardno_parent)
     cardno_child = cl.get_cardno(child)[0]
     bal1 = cl.get_balance_card(cardno_parent)
@@ -73,7 +73,7 @@ def transfer(amount,cardno_parent,child):
         return f"insufficient funds. Balance = {bal1}"
 
 def add_history(description,cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     import datetime as dt
     dame = str(dt.datetime.today())
     lis = dame.split()
@@ -90,7 +90,7 @@ def add_history(description,cardno):
     return details
 
 def get_history(tid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     connection = acnt.establish_connection("localhost", "root", "vishal26", "bank")
     cur = connection.cursor()
     try:
@@ -109,7 +109,7 @@ def get_history(tid):
 # print(get_history('txn883.2020-09-09.19:33:34.451760.155'))
 
 def ministatement(cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost','root','vishal26','bank')
     cur = connection.cursor()
     cur.execute(f'''SELECT tid,date,time,description FROM transactionlog
@@ -148,7 +148,7 @@ def gen_rid(custid,accntid=0,file="urids"):
     return 'req' + urid + '.' + dateime + '.' + custid + '.' + str(accntid)
 
 def add_req_transac(description,custid,accntid=0,cardno = 0):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     import datetime as dt
     dame = str(dt.datetime.today())
     lis = dame.split()
@@ -160,7 +160,7 @@ def add_req_transac(description,custid,accntid=0,cardno = 0):
     connection.commit()
 
 def requeststatement(custid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     d = {}
     connection = acnt.establish_connection('localhost','root','vishal26','bank')
     cur = connection.cursor()
@@ -177,7 +177,7 @@ def requeststatement(custid):
 
     return d
 def delete_request_requesttab(reqid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = connection.cursor()
     cur.execute(f'''DELETE FROM request WHERE reqid = '{reqid}'; 

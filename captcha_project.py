@@ -22,7 +22,7 @@ def create_captcha():
     draw=ImageDraw.Draw(image)
     position=150
     color='rgb(0,0,0)'
-    for i in st:        
+    for i in st:
         font=font_select()
         draw.text((position,60), i, fill=color, font=font)
         position=position+33
@@ -42,3 +42,4 @@ download and save the other given files
 #5 the final captcha pic- give the location where u want to save the picture so that u can display it later'''
 
 '''Delete the instruction and numbering comments in the project code'''
+
