@@ -32,7 +32,7 @@ def generate_creditcard(company):
 
 
 
-def addto_cardlog(cardno,cvv,expirydate,company,pin,status="open",balance=200000,cardlimit=200000):
+def addto_cardlog(cardno,cvv,expirydate,company,pin,balance=200000,status="open",cardlimit=200000):
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
@@ -65,7 +65,7 @@ def get_balance_card(cardno):
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
-    cur1.execute(f''' SELECT balance FROM cardlog WHERE cardno = {cardno}''')
+    cur1.execute(f''' SELECT balance FROM cardlog WHERE cardno = {cardno};''')
     balance = cur1.fetchall()[0][0]
     return balance
 

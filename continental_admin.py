@@ -324,7 +324,7 @@ def change_requests(cust, l_checked, l_notchecked):
         s = lis[0]
         reqid = s[0:(len(s)-1)]
         lis2 = reqid.split('.')
-        mail.request_complete_email_card(acnt.get_email(custid=cust),reqid,'You have been sent a mail regarding your new transaction card.\nIF NOT RECIEVED WITHIN 24HRS PLEASE CONTACT CUSTOMER CARE IMMEDIATELY.')
+        mail.request_complete_email_card(acnt.get_email(custid=cust),reqid,'We have sent you a mail containing the details your new transaction card.\nIF NOT RECIEVED WITHIN 24HRS PLEASE CONTACT CUSTOMER CARE IMMEDIATELY.')
         txn.delete_request_requesttab(reqid)
         desc = f'Card assigned to customer id: {cust},account: {lis2[-1]}'
         txn.add_req_transac(desc,cust,lis2[-1])
@@ -435,8 +435,9 @@ def update_process(cust, acc, field, new_data):
 class ScrollableFrame(ttk.Frame):
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
-        canvas = Canvas(self, width=800, height=480)
-        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        canvas = Canvas(self, width = 800, height = 480)
+        scrollbar1 = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollbar2 = ttk.Scrollbar(self, orient="horizontal", command=canvas.xview)
         self.scrollable_frame = ttk.Frame(canvas)
 
         self.scrollable_frame.bind(
@@ -448,11 +449,12 @@ class ScrollableFrame(ttk.Frame):
 
         canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
 
-        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.configure(yscrollcommand=scrollbar1.set)
+        canvas.configure(xscrollcommand=scrollbar2.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-
+        canvas.grid(row=0,column=0)
+        scrollbar1.grid(row=0, column=100, rowspan=100, sticky='ns')
+        scrollbar2.grid(row=100,columnspan=100, sticky='we')
 
 def cust_details_page():
     global cust_screen
@@ -482,130 +484,150 @@ def cust_details_page():
                                                                                sticky=W)
 
 
-def show_cust_details(cust):  ##CUST ID IS A STRING HERE SO IF YOU WANNA CHANGE TO INT THAT'S UPTO YOU
+def show_cust_details(cust):
     global cust_screen
     global image_f
     global details_screen
     from User_functions import accounts as acnt
+    from User_functions.card_function import cardlog as cl
 
     cust_screen.destroy()
 
-    details_screen = Toplevel()
-    details_screen.title("The Continental")
-    details_screen.iconbitmap("Icon.ico")
+    try:
+        details_screen = Toplevel()
+        details_screen.title("The Continental")
+        details_screen.iconbitmap("Icon.ico")
 
-    logo = Label(details_screen, image=image_f).grid(row=0, column=0, columnspan=3)
+        logo = Label(details_screen, image=image_f).grid(row=0, column=0, columnspan=3)
 
-    frame = LabelFrame(details_screen, text="DETAILS OF CUST_ID: " + cust)
-    frame.grid(row=1, column=0, padx=80, pady=20)
-    frame_s = ScrollableFrame(frame)
+        frame = LabelFrame(details_screen, text="DETAILS OF CUST_ID: " + cust)
+        frame.grid(row=1, column=0, padx=80, pady=20)
+        frame_s = ScrollableFrame(frame)
 
-    li = ["Name:", "DOB:", "Email:", "Mobile:", "Address:", "Aadhar:"]
+        li = ["Name:", "DOB:", "Email:", "Mobile:", "Address:", "Aadhar:","Status:"]
 
-    gen_details = acnt.get_details_users(li,str(cust)) ##FILL THE GENERAL DETAILS IN THIS LIST
+        gen_details = acnt.get_details_users(li, str(cust))  ##FILL THE GENERAL DETAILS IN THIS LIST
 
-    d = {}
+        d = {}
 
-    for i in range(len(li)):
-        d[li[i]] = gen_details[i]
+        for i in range(len(li)):
+            d[li[i]] = gen_details[i]
 
-    n = 1
+        n = 1
 
-    ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="GENERAL DETAILS ").grid(row=0,
-                                                                                                             column=0,
-                                                                                                             columnspan=2,
-                                                                                                             pady=10,
-                                                                                                             padx=5,
-                                                                                                             sticky=W)
+        ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="GENERAL DETAILS ").grid(row=0,
+                                                                                                                 column=0,
+                                                                                                                 columnspan=2,
+                                                                                                                 pady=10,
+                                                                                                                 padx=5,
+                                                                                                                 sticky=W)
 
-    for j in d:
-        ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=j).grid(row=n, column=0, pady=3, padx=5,
-                                                                               sticky=W)
-        ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d[j]).grid(row=n, column=1, pady=3, padx=5,
-                                                                                  sticky=W)
-        n += 1
-
-    if has_credit(cust) == True:
-        ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="CREDIT ACCOUNT DETAILS ").grid(
-            row=n, column=0, columnspan=2, pady=10, padx=5, sticky=W)
-        n += 1
-
-        l2 = ["Business:","SSN:","Profit:", "Turnover:"]
-
-        cred_details = acnt.get_details_credit(l2,str(cust))  ##GET THE CREDIT DETAILS IN THIS LIST
-
-        d2 = {}
-        for k in range(len(l2)):
-            d2[l2[k]] = cred_details[k]
-
-        for m in d2:
-            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=m).grid(row=n, column=0, pady=3, padx=5,
+        for j in d:
+            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=j).grid(row=n, column=0, pady=3, padx=5,
                                                                                    sticky=W)
-            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d2[m]).grid(row=n, column=1, pady=3, padx=5,
-                                                                                       sticky=W)
+            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d[j]).grid(row=n, column=1, pady=3, padx=5,
+                                                                                      sticky=W)
             n += 1
 
-    if has_wife(cust) == True:
-        ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="SPOUSE DETAILS ").grid(row=n,
-                                                                                                                column=0,
-                                                                                                                columnspan=2,
-                                                                                                                pady=10,
-                                                                                                                padx=5,
-                                                                                                                sticky=W)
-        n += 1
-
-        l3 = ["Name:", "DOB:", "Aadhar:", "Occupation:", "Income:"]
-        wife_details = acnt.get_details_spouse(l3,str(cust)) ##GET THE WIFE DETAILS IN THIS LIST
-
-        d3 = {}
-        for k in range(len(l3)):
-            d3[l3[k]] = wife_details[k]
-
-        for m in d3:
-            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=m).grid(row=n, column=0, pady=3, padx=5,
-                                                                                   sticky=W)
-            ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d3[m]).grid(row=n, column=1, pady=3, padx=5,
-                                                                                       sticky=W)
+        if has_credit(cust) == True:
+            ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"),
+                      text="CREDIT ACCOUNT DETAILS ").grid(
+                row=n, column=0, columnspan=2, pady=10, padx=5, sticky=W)
             n += 1
 
-    ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="ACCOUNTS ").grid(row=n, column=0,
-                                                                                                      columnspan=2,
-                                                                                                      pady=10, padx=5,
-                                                                                                      sticky=W)
-    n += 1
+            l2 = ["Business:", "SSN:", "Profit:", "Turnover:"]
 
-    lst = [["AccntID", "Type", "CardNo"]]
+            cred_details = acnt.get_details_credit(l2, str(cust))  ##GET THE CREDIT DETAILS IN THIS LIST
 
-    lst2 = acnt.get_details_accounts(lst[0],str(cust))
+            d2 = {}
+            for k in range(len(l2)):
+                d2[l2[k]] = cred_details[k]
 
-    for i in range(len(lst2)):
-        lst.append(lst2[i])
+            for m in d2:
+                ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=m).grid(row=n, column=0, pady=3, padx=5,
+                                                                                       sticky=W)
+                ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d2[m]).grid(row=n, column=1, pady=3,
+                                                                                           padx=5,
+                                                                                           sticky=W)
+                n += 1
 
-    total_rows = len(lst)
-    total_columns = len(lst[0])
+        if has_wife(cust) == True:
+            ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="SPOUSE DETAILS ").grid(
+                row=n,
+                column=0,
+                columnspan=2,
+                pady=10,
+                padx=5,
+                sticky=W)
+            n += 1
 
-    for i in range(total_rows):
-        for j in range(total_columns):
-            tab = Entry(frame_s.scrollable_frame, width=25,
-                        font=('Calibri', 14, 'bold'))
+            try:
+                l3 = ["Name:", "DOB:", "Aadhar:", "Occupation:", "Income:", "Cardno:"]
+                wife_details = acnt.get_details_spouse(l3, str(cust))  ##GET THE WIFE DETAILS IN THIS LIST
+            except:
+                l3 = ["Name:", "DOB:", "Aadhar:", "Occupation:", "Income:"]
+                wife_details = acnt.get_details_spouse(l3, str(cust))
 
-            tab.grid(row=n, column=j, columnspan=1, sticky=W)
-            tab.insert(END, lst[i][j])
-            tab.config(state="disabled")
+            d3 = {}
+            for k in range(len(l3)):
+                d3[l3[k]] = wife_details[k]
+
+            for m in d3:
+                ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=m).grid(row=n, column=0, pady=3, padx=5,
+                                                                                       sticky=W)
+                ttk.Label(frame_s.scrollable_frame, font=("Calibri", 12), text=d3[m]).grid(row=n, column=1, pady=3,
+                                                                                           padx=5,
+                                                                                           sticky=W)
+                n += 1
+
+        ttk.Label(frame_s.scrollable_frame, font=("Arial Black", 20, "underline"), text="ACCOUNTS ").grid(row=n,
+                                                                                                          column=0,
+                                                                                                          columnspan=2,
+                                                                                                          pady=10,
+                                                                                                          padx=5,
+                                                                                                          sticky=W)
         n += 1
-    ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n, column=0, columnspan=2, pady=10, padx=5, sticky=W)
-    ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 1, column=0, columnspan=2, pady=10, padx=5, sticky=W)
-    ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 2, column=0, columnspan=2, pady=10, padx=5, sticky=W)
-    ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 3, column=0, columnspan=2, pady=10, padx=5, sticky=W)
-    ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 4, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+        lst = [["AccntID", "Type-status", "CardNo"]]
 
-    button_back = Button(details_screen, font=("Calibri", 10), text="Back", bg="#B4B4B4",
-                         command=lambda: back(details_screen)).grid(row=n + 6, column=1, padx=20, pady=10, sticky=E)
-    button_exit = Button(details_screen, font=("Calibri", 10), text="Exit", bg="#B4B4B4",
-                         command=lambda: back(home_screen, value="exit")).grid(row=n + 6, column=0, padx=20, pady=10,
-                                                                               sticky=W)
+        lst2 = acnt.get_details_accounts(lst[0], str(cust))
 
-    frame_s.grid(row=1, column=0, padx=80, pady=20)
+        for i in range(len(lst2)):
+            lst.append(lst2[i])
+
+        total_rows = len(lst)
+        total_columns = len(lst[0])
+
+        for i in range(total_rows):
+            for j in range(total_columns):
+                tab = Entry(frame_s.scrollable_frame, width=50,
+                            font=('Calibri', 14, 'bold'))
+
+                tab.grid(row=n, column=j, columnspan=1, sticky=W)
+                tab.insert(END, lst[i][j])
+                tab.config(state="disabled")
+            n += 1
+        ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+        ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 1, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+        ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 2, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+        ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 3, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+        ttk.Label(frame_s.scrollable_frame, text=" ").grid(row=n + 4, column=0, columnspan=2, pady=10, padx=5, sticky=W)
+
+        button_back = Button(details_screen, font=("Calibri", 10), text="Back", bg="#B4B4B4",
+                             command=lambda: back(details_screen)).grid(row=n + 6, column=1, padx=20, pady=10, sticky=E)
+        button_exit = Button(details_screen, font=("Calibri", 10), text="Exit", bg="#B4B4B4",
+                             command=lambda: back(home_screen, value="exit")).grid(row=n + 6, column=0, padx=20,
+                                                                                   pady=10,
+                                                                                   sticky=W)
+
+        frame_s.grid(row=1, column=0, padx=80, pady=20)
+
+    except:
+        error = messagebox.showerror("404!","Customer not found")
+        if error == 'ok':
+            back(details_screen)
+
+
+
 
 
 def has_credit(cust):
@@ -791,7 +813,7 @@ def dm_cust():
         row=4, column=2, padx=20, pady=20, sticky=E)
     button_exit = Button(frame, font=("Calibri", 10), text="Exit", bg="#B4B4B4",
                          command=lambda: back(home_screen, value="exit")).grid(row=4, column=0, padx=20, pady=20,
-                                                                               sticky=W)
+                                                                              sticky=W)
 
 
 def process_dm(cust_id, text):
@@ -871,7 +893,12 @@ def assn_card(cust, accnt, holder, card_com, cred_deb):
     from User_functions.card_function import cardlog as cl
     from User_functions.emailserver import otp_email_sender_yagmail as mail
     import random
-    print(cust, accnt, holder, card_com, cred_deb)
+
+    try:
+        card = cl.get_cardno(accnt)[0]
+        balance = cl.get_balance_card(int(card))
+    except:
+        balance = 200000
     if card_com in ['Visa','visa','VISA']:
         card_com = 'visa'
     else:
@@ -882,8 +909,8 @@ def assn_card(cust, accnt, holder, card_com, cred_deb):
             details = cl.generate_creditcard(card_com)
             pin = random.randint(1000,9999)
             acnt.addto_acntcard(int(accnt),details[0],cred_deb)
-            cl.addto_cardlog(details[0],details[1],details[2],card_com,pin)
-            mail.card_assign_mail(acnt.get_email(custid=cust),details[0],accnt,cust,details[1],details[2],200000,pin,card_com,cred_deb)
+            cl.addto_cardlog(details[0],details[1],details[2],card_com,pin,balance)
+            mail.card_assign_mail(acnt.get_email(custid=cust),details[0],accnt,cust,details[1],details[2],balance,pin,card_com,cred_deb)
             success = messagebox.showinfo("Success!", "Card Successfully Assigned!")
             if success == "ok":
                 assn_screen.destroy()
@@ -891,25 +918,25 @@ def assn_card(cust, accnt, holder, card_com, cred_deb):
             details = cl.generate_creditcard(card_com)
             pin = random.randint(1000, 9999)
             acnt.addto_acntcard(int(accnt), details[0], cred_deb)
-            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
-            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin,balance)
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], balance,
                                   pin, card_com, cred_deb)
             details = cl.generate_creditcard(card_com)
             pin = random.randint(1000, 9999)
             acnt.addto_acntcard(int(accnt), details[0], cred_deb,)
-            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin,balance)
             spouse = acnt.get_details_spouse(['name:','dob:','aadhar:','income:','occupation:'],cust)
             acnt.addto_spouse_card(details[0],spouse[0],spouse[1],spouse[2],spouse[4],spouse[3],cust)
-            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], balance,
                                   pin, card_com, cred_deb)
         else:
             details = cl.generate_creditcard(card_com)
             pin = random.randint(1000, 9999)
             acnt.addto_acntcard(int(accnt), details[0], cred_deb)
-            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin)
+            cl.addto_cardlog(details[0], details[1], details[2], card_com,pin,balance)
             spouse = acnt.get_details_spouse(['name:', 'dob:', 'aadhar:', 'income:', 'occupation:'], cust)
             acnt.addto_spouse_card(details[0], spouse[0], spouse[1], spouse[2], spouse[4], spouse[3], cust)
-            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], 200000,
+            mail.card_assign_mail(acnt.get_email(custid=cust), details[0], accnt, cust, details[1], details[2], balance,
                                   pin, card_com, cred_deb)
 
         success = messagebox.showinfo("Success!", "Card Successfully Assigned!")

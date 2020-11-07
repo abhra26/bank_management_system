@@ -47,8 +47,6 @@ wrong_credentials = 0
 wrong_otp = 0
 card_number_initial = []
 
-##INTRO PAGE
-
 def intro():
     global image_f
     global login_register
@@ -76,10 +74,6 @@ def intro():
                    bg="#B4B4B4").grid(row=7, column=1)
 
     login_register.mainloop()
-    
-
-
-##LOGIN PAGE IF CHOSEN
 
 def login_page():
     global image_f
@@ -122,8 +116,6 @@ def login_page():
     Button_exit = Button(login_screen, text="Back", highlightbackground="#B4B4B4", command=lambda: back(login_screen)).grid(row=6,
                                                                                                            column=2,
                                                                                                            sticky=E)
-
-##LOGIN CONFIRMATION
 def login():
     global ID_info
     global entry1
@@ -135,8 +127,7 @@ def login():
     global ID_info_initial
     ID_info = ID.get()
     ID_info_initial.append(ID_info)
-    account_list = acnt.getno_of_acnts(ID_info)  ##I GAVE THIS TO RUN FOR NOW, YOU FILL UP THIS LIST HERE
-    # ALSO DO ONE THING TRY TO STORE THIS AS GLOBAL VARIABLE IT HELPS IN BACK BUTTON
+    account_list = acnt.getno_of_acnts(ID_info)
     try:
         status = acnt.get_status_account(account_list[0])
         name = acnt.get_name(ID_info)
@@ -164,11 +155,8 @@ def login():
         else:
             pass
 
-
-##LOGIN VERIFICATION
-
 def check_login():
-    global ID_info  # This is the Login_Id that will be stored
+    global ID_info
     global Password
     global wrong_login
     from User_functions import accounts as acnt
@@ -197,8 +185,6 @@ def check_login():
     except:
         return False
 
-
-##REGISTRATION IF CHOSEN
 def account_selection(variable):
     global image_f
     global login_register
@@ -238,9 +224,7 @@ def account_selection(variable):
                                                                                                           sticky=W)
         Butt_back = Button(screen1, text="BACK", command=lambda: back(screen1), highlightbackground="#B4B4B4").grid(row=5, column=0,
                                                                                                    sticky=E)
-
 def credit_page_form():
-    # income, business/work address, social sec number, Check eligiblity, profit per annum
     global image_f
     global incomeamt
     global business_address
@@ -294,9 +278,7 @@ def credit_page_form():
     Butt_back = Button(credit_screen, text="BACK", command=lambda: back(credit_screen), highlightbackground="#B4B4B4").grid(row=5,column=0,sticky=E)
 
 
-
 def register_page():
-    # custid,accntid,passwd,email,mobile,city,state,zipcode,aadhar,gender,name,address,dob
     global image_f
     global f_name
     global l_name
@@ -406,8 +388,6 @@ def register(screen):
     screen.destroy()
     captcha_page("register","na","na",screen)
 
-###ACOUNTS LIST SCREEN
-
 def accounts():
     from User_functions import accounts as acnt
     global account_screen
@@ -445,9 +425,6 @@ def accounts():
         row=n + 1, column=1, sticky=E, padx=10, pady=10)
 
     account_screen.mainloop()
-
-
-##FUNCTION TO GET ACCOUNT
 
 def get_account(ac_no):
     global image_f
@@ -503,9 +480,6 @@ def get_account(ac_no):
 
         menu.mainloop()
 
-
-
-##BACK BUTTON
 def back(screen, value="back"):
     global credit_screen
     global Register_screen
@@ -628,7 +602,7 @@ def deposit_withdraw_transfer(mode="withdraw"):
             entry_receiver.delete(0, END)
 
         label1 = Label(frame, font=("Calibri", 18), text="Card Number: ").grid(row=n, column=0, pady=15, padx=50)
-        label2 = Label(frame, font=("Calibri", 18), text="Expiry Date(MM/YY): ").grid(row=n + 1, column=0, pady=15)
+        label2 = Label(frame, font=("Calibri", 18), text="Expiry Date: ").grid(row=n + 1, column=0, pady=15)
         label3 = Label(frame, font=("Calibri", 18), text="CVV: ").grid(row=n + 2, column=0, pady=15)
         label4 = Label(frame, font=("Calibri", 18), text="Type: ").grid(row=n + 3, column=0, pady=15)
 
@@ -656,10 +630,6 @@ def deposit_withdraw_transfer(mode="withdraw"):
         message = messagebox.showinfo("ERROR!","You do  not have a transaction card\nPlease do apply for one by contacting Customer Care")
         if message == "ok":
             pass
-
-
-
-
 
 def amount_page(mode):
     global image_f
@@ -722,7 +692,6 @@ def insert(value):
     entry_amt.delete(0, END)
     entry_amt.insert(0, string + value)
 
-
 def withdraw_or_deposit_value(mode):
     global c_no
     global expiry
@@ -767,9 +736,6 @@ def withdraw_or_deposit_value(mode):
         if message == 'ok':
             amount_screen.destroy()
             # amount_page(mode)
-
-
-
 
 def check_card(mode="withdraw"):
     global c_no
@@ -822,7 +788,6 @@ def check_card(mode="withdraw"):
                     entry_receiver.delete(0, END)
                 typo.set("(Choose Type)")
 
-
 def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
     from User_functions.card_function import cardlog as cl
     global wrong_credentials
@@ -846,7 +811,6 @@ def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
         else:
             wrong_credentials = 1
             return False
-
 
 def statement_page(ac_no):
     from User_functions import transaction as txn
@@ -926,15 +890,6 @@ def otp_page(amount, card_number, receiver_ac_id, mode):
                           command=lambda: check_otp(otp, otp_value.get(), amount, card_number, receiver_ac_id,
                                                     mode)).grid(row=2, column=0, padx=20, pady=50)
 
-
-
-# def generate_otp():
-#     import random
-#     n = random.randint(10000, 99999)
-#     print(f"_____SMS_____\nYour account is being accessed for making a transaction\nYour OTP is {n} \nPlease confirm transaction")
-#     return n
-
-
 def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
     from User_functions import transaction as txn
     if generated == entered:
@@ -951,13 +906,9 @@ def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
             success2 = messagebox.showinfo("success!",result)
             if success2 == "ok":
                 otp_screen.destroy()
-            #### YOU RUN YOUR TRANSACTION HERE I GUESS
-            #### THE AMOUNT PARAMETER IS THE AMOUNT HERE
-            #### ALSO GAVE YOU THE CARD NUMBER
     else:
         error = messagebox.showerror("ERROR!", "OTP Verification Failed!\n Otp Did not match.\nPlease Try Again")
         otp_screen.destroy()
-
 
 def balance_page(accntid):
     from User_functions.card_function import cardlog as cl
@@ -973,7 +924,6 @@ def balance_page(accntid):
                                       "You do  not have a transaction card\nPlease do apply for one by contacting Customer Care")
         if message == "ok":
             pass
-
 
 def cust_care_page():
     global image_f
@@ -1033,7 +983,6 @@ def process_request(cust_id, request, request_type):
     if success == "ok":
         cust_care_screen.destroy()
 
-
 def card_type_page(ac_no):
     global image_f
     global menu
@@ -1069,9 +1018,6 @@ def card_type_page(ac_no):
     Butt_back = Button(card_type_screen, text="BACK", command=lambda: back(card_type_screen), bg="#B4B4B4").grid(row=4,
                                                                                                                  column=0,
                                                                                                                  sticky=E)
-
-
-
 def check_eligible(screen):
     import User_functions.signup as sg
     global incomeamt
@@ -1105,7 +1051,6 @@ def check_eligible(screen):
         else:
             pass
 
-
 def next_page(screen, card_type="CREDIT"):
     if screen == screen1:
         global actype  ##THE VARIABLE FOR YOUR ACCOUNT TYPE USE THIS TO ADD TO SQL
@@ -1130,7 +1075,6 @@ def next_page(screen, card_type="CREDIT"):
         else:
             screen.destroy()
             card_company(card_type)
-
 
 def credit_card_application_form(card_type):
     global image_f
@@ -1204,13 +1148,9 @@ def credit_card_application_form(card_type):
     else:
         card_company(card_type)
 
-
 def card_company_switch(card_type):
     card_page.destroy()
     card_company(card_type)
-
-
-
 
 def card_company(card_type):
     global image_f
@@ -1246,8 +1186,6 @@ def card_company(card_type):
     Butt_back = Button(company_screen, text="BACK", command=lambda: back(company_screen), bg="#B4B4B4").grid(row=4,
                                                                                                              column=0,
                                                                                                              sticky=E)
-
-
 def store_cardtype(card, card_type):
     global type_card
     global visa_master
@@ -1259,7 +1197,6 @@ def store_cardtype(card, card_type):
     print(card)
     company_screen.destroy()
     captcha_page("card_application",visa_master,type_card)
-
 
 def captcha_page(form,visa_master,type_card,screen = 'NA'):
     global image_f
@@ -1303,12 +1240,10 @@ def captcha_page(form,visa_master,type_card,screen = 'NA'):
                        bg="#B4B4B4").grid(row=4, column=0, sticky=E, padx=50, pady=25)
     print(captcha_code)
 
-
 def refresh_captcha(form,visa_master,type_card,screen = 'NA'):
     global captcha_screen
     captcha_screen.destroy()
     captcha_page(form,visa_master,type_card,screen)
-
 
 def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'):
     from User_functions.card_function import cardlog as cl

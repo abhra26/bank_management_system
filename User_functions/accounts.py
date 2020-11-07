@@ -200,35 +200,89 @@ def get_allaccntid():
             result.append(j)
     return result
 
+def has_wife(cust):
+    conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = conection.cursor()
+    cur.execute(f'''SELECT custid FROM spouse_credit_cards;''')
+    out = cur.fetchall()
+    fi = []
+    for i in out:
+        for j in i:
+            fi.append(j)
+    cur.execute(f'''SELECT custid FROM card_applications;''')
+    out2 = cur.fetchall()
+    fi2 = []
+    for i in out2:
+        for j in i:
+            fi2.append(j)
+
+    if str(cust) in fi+fi2:
+        return True
+    else:
+        return False
 
 def delete_accnt(custid,accntid):
     from User_functions.card_function import cardlog as cl
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
-    if accntid in get_allaccntid():
-        cur.execute(f''' DELETE FROM acnttype WHERE accntid = {accntid};
-        ''')
-        conection.commit()
-        if cl.has_card(accntid):
-            cardno = cl.get_cardno(accntid)
-            for i in cardno:
-                cur.execute(f''' DELETE FROM cardlog WHERE cardno = {i};
-                ''')
-                conection.commit()
-                description = f"cardno: {i} deleted"
-                txn.add_req_transac(description,custid,accntid,i)
-            cur.execute(f'''DELETE FROM acntcard WHERE accntid = {accntid};''')
+    if has_wife(custid):
+        if accntid in get_allaccntid():
+            cur.execute(f''' DELETE FROM acnttype WHERE accntid = {accntid};
+            ''')
             conection.commit()
-        cur.execute(f'''DELETE FROM creditacnts WHERE accntid = {accntid};''')
-        conection.commit()
-        cur.execute(f'''DELETE FROM users WHERE accntid = {accntid};''')
-        conection.commit()
-        description = f"account id: {accntid} deleted"
-        txn.add_req_transac(description,custid,accntid)
-        return True
+            if cl.has_card(accntid):
+                cardno = cl.get_cardno(accntid)
+                for i in cardno:
+                    try:
+                        cur.execute(f''' DELETE FROM cardlog WHERE cardno = {i};
+                        ''')
+                        conection.commit()
+                        description = f"cardno: {i} deleted"
+                        txn.add_req_transac(description,custid,accntid,i)
+                    except:
+                        cur.execute(f''' DELETE FROM spouse_credit_cards WHERE cardno = {i};
+                                                ''')
+                        cur.execute(f''' DELETE FROM cardlog WHERE cardno = {i};
+                                                ''')
+                        conection.commit()
+                        description = f"cardno: {i} deleted"
+                        txn.add_req_transac(description, custid, accntid, i)
+                cur.execute(f'''DELETE FROM acntcard WHERE accntid = {accntid};''')
+                conection.commit()
+            cur.execute(f'''DELETE FROM creditacnts WHERE accntid = {accntid};''')
+            conection.commit()
+            cur.execute(f'''DELETE FROM users WHERE accntid = {accntid};''')
+            conection.commit()
+            description = f"account id: {accntid} deleted"
+            txn.add_req_transac(description,custid,accntid)
+            return True
+        else:
+            return False
     else:
-        return False
+        if accntid in get_allaccntid():
+            cur.execute(f''' DELETE FROM acnttype WHERE accntid = {accntid};
+                ''')
+            conection.commit()
+            if cl.has_card(accntid):
+                cardno = cl.get_cardno(accntid)
+                for i in cardno:
+                    cur.execute(f''' DELETE FROM cardlog WHERE cardno = {i};
+                        ''')
+                    conection.commit()
+                    description = f"cardno: {i} deleted"
+                    txn.add_req_transac(description, custid, accntid, i)
+                cur.execute(f'''DELETE FROM acntcard WHERE accntid = {accntid};''')
+                conection.commit()
+            cur.execute(f'''DELETE FROM creditacnts WHERE accntid = {accntid};''')
+            conection.commit()
+            cur.execute(f'''DELETE FROM users WHERE accntid = {accntid};''')
+            conection.commit()
+            description = f"account id: {accntid} deleted"
+            txn.add_req_transac(description, custid, accntid)
+            return True
+        else:
+            return False
 def delete_cust(custid):
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -354,7 +408,7 @@ def get_details_credit(lis,custid):
 
 def get_details_spouse(lis,custid):
     d = {"Spouse's Name": "name", "Spouse's Aadhar": "aadhar", "Spouse's Occupation": "occupation",
-         "Spouse's Income": "income"}
+         "Spouse's Income": "income","Credit Card" : "cardno"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute('''SELECT custid FROM spouse_credit_cards;''')
@@ -389,19 +443,31 @@ def get_details_accounts(lis,custid):
         for j in lis:
             j = j.lower()
             if j != 'cardno':
-                try:
-                    cur.execute(f''' SELECT {j} FROM acntcard WHERE accntid = {i};''')
+                if j == "type-status":
+                    g = j.split('-')
+                    cur.execute(f''' SELECT {g[1]} FROM users WHERE accntid = {i};''')
+                    out1 = cur.fetchall()[0][0]
+                    cur.execute(f''' SELECT {g[0]} FROM acnttype WHERE accntid = {i};''')
                     out = cur.fetchall()[0][0]
-                    sub_result+= [str(out)]
-                except:
-                    cur.execute(f''' SELECT {j} FROM acnttype WHERE accntid = {i};''')
-                    out = cur.fetchall()[0][0]
-                    sub_result += [str(out)]
+                    sub_result += [str(out)+'-'+str(out1)]
+                else:
+                    try:
+                            cur.execute(f''' SELECT {j} FROM acntcard WHERE accntid = {i};''')
+                            out = cur.fetchall()[0][0]
+                            sub_result+= [str(out)]
+                    except:
+                            cur.execute(f''' SELECT {j} FROM acnttype WHERE accntid = {i};''')
+                            out = cur.fetchall()[0][0]
+                            sub_result += [str(out)]
             else:
                 if cl.has_card(i):
                     cur.execute(f''' SELECT {j} FROM acntcard WHERE accntid = {i};''')
-                    out = cur.fetchall()[0][0]
-                    sub_result += [str(out)]
+                    out = cur.fetchall()
+                    output = ""
+                    for i in out:
+                        for j in i:
+                            output += str(j)+'\n'+','
+                    sub_result += [output]
                 else:
                     sub_result+=['N/A']
         result.append(sub_result)

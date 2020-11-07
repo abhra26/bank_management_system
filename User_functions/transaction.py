@@ -26,6 +26,8 @@ def withdraw(amount,cardno):
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
     accntid = cl.get_accntid(cardno)
+    cards = cl.get_cardno(accntid)
+    cards.remove(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance - amount
     if fi_balance>0:
@@ -33,6 +35,9 @@ def withdraw(amount,cardno):
         description = f'{amount} withdrawn'
         details = add_history(description,cardno)
         email.transacttion_mail(acnt.get_email(cardno),accntid,details[0],cardno,amount,"withdrawn")
+        if len(cards) !=0:
+            for card in cards:
+                cl.update_balance(card,fi_balance)
         return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id{details[1]}"
     else:
         return f"Insufficient funds, balance={in_balance}"
@@ -42,12 +47,17 @@ def deposit(amount,cardno):
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
     accntid = cl.get_accntid(cardno)
+    cards = cl.get_cardno(accntid)
+    cards.remove(cardno)
     in_balance = cl.get_balance_card(cardno)
     fi_balance = in_balance + amount
     cl.update_balance(cardno, fi_balance)
     description = f'{amount} deposited'
     details = add_history(description,cardno)
     email.transacttion_mail(acnt.get_email(cardno), accntid, details[0],cardno,amount,"deposited")
+    if len(cards) != 0:
+        for card in cards:
+            cl.update_balance(card,fi_balance)
     return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id {details[1]}"
 
 def transfer(amount,cardno_parent,child):
@@ -55,18 +65,24 @@ def transfer(amount,cardno_parent,child):
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
     parent = cl.get_accntid(cardno_parent)
-    cardno_child = cl.get_cardno(child)[0]
+    cards_p = cl.get_cardno(parent)
+    cards_p.remove(cardno_parent)
+    cardno_child = cl.get_cardno(child)
     bal1 = cl.get_balance_card(cardno_parent)
     bal2 = cl.get_balance_card(cardno_child)
     nbal1 = bal1-amount
     if nbal1>0:
         bal2 = bal2+amount
+        if len(cards_p) != 0:
+            for card in cards_p:
+                cl.update_balance(card,nbal1)
         cl.update_balance(cardno_parent,nbal1)
-        cl.update_balance(cardno_child,bal2)
+        for card in cardno_child:
+            cl.update_balance(card,bal2)
         description = f'{amount} transfered from {parent} to {child}'
         details = add_history(description,cardno_parent)
         description = f'{amount} transfered to account from {parent}'
-        add_history(description,cardno_child)
+        add_history(description,cardno_child[0])
         email.transacttion_mail(acnt.get_email(cardno_parent), parent, details[0],cardno_parent,amount,"transfered",child)
         return f"transaction successful.\nBalance = {nbal1}\ntransaction id: {details[0]}\nunique transaction id: {details[1]}"
     else:
