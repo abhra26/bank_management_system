@@ -41,7 +41,7 @@ def admin_login():
 
 def check_admin_login(password, entry):
     global login_page
-    from admin_functions import request_admin as r
+    import request_admin as r
 
     if r.admin_pass(password):
         success = messagebox.showinfo("Logged In!", "Welcome Admin.")
@@ -148,7 +148,7 @@ def service_status_page():
 
 
 def block_user(cust_id, acc_id, entry_1, entry_2):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -171,7 +171,7 @@ def block_user(cust_id, acc_id, entry_1, entry_2):
 
 
 def open_user(cust_id, acc_id, entry_1, entry_2):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -193,7 +193,7 @@ def open_user(cust_id, acc_id, entry_1, entry_2):
 
 
 def delete_user(cust_id, acc_id, entry_1, entry_2):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     custID = cust_id
     if acc_id == '':
         acc_id = 0
@@ -245,7 +245,7 @@ def card_application_page():
 
 
 def switch_screen(cust):
-    from User_functions import transaction as txn
+    import transaction as txn
 
     li = txn.requeststatement(cust)  ##GET ME THE REQUESTS IN THIS LI DICTIONARY
     request_page(li, cust)
@@ -316,9 +316,9 @@ def edit_request_page(li, cust):
 
 
 def change_requests(cust, l_checked, l_notchecked):
-    from User_functions import transaction as txn
-    from User_functions.emailserver import otp_email_sender_yagmail as mail
-    from User_functions import accounts as acnt
+    import transaction as txn
+    import otp_email_sender_yagmail as mail
+    import accounts as acnt
     for i in l_checked:
         lis = i.split()
         s = lis[0]
@@ -380,9 +380,9 @@ def update_records_page():
 
 
 def update_process(cust, acc, field, new_data):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     global update_screen
-    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    import otp_email_sender_yagmail as mail
 
     cust_id = str(cust)
     if acc == '':
@@ -488,8 +488,7 @@ def show_cust_details(cust):
     global cust_screen
     global image_f
     global details_screen
-    from User_functions import accounts as acnt
-    from User_functions.card_function import cardlog as cl
+    import accounts as acnt
 
     cust_screen.destroy()
 
@@ -631,7 +630,7 @@ def show_cust_details(cust):
 
 
 def has_credit(cust):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     conection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT custid FROM creditacnts;''')
@@ -647,7 +646,7 @@ def has_credit(cust):
 
 
 def has_wife(cust):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     conection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT custid FROM spouse_credit_cards;''')
@@ -673,7 +672,7 @@ def others_page():
     # Sitka Subheading
     global others_screen
     global image_f
-    from admin_functions import request_admin as r
+    import request_admin as r
 
     others_screen = Toplevel()
     others_screen.title("The Continental")
@@ -762,10 +761,10 @@ def reply_page(n, cust_list):
 
 def send_reply(request, reply):  ## YORU NEEDED PARAMETERS
     global reply_screen
-    from admin_functions import request_admin as r
-    from User_functions.emailserver import otp_email_sender_yagmail as mail
-    from User_functions import transaction as txn
-    from User_functions import accounts as acnt
+    import request_admin as r
+    import otp_email_sender_yagmail as mail
+    import transaction as txn
+    import accounts as acnt
     message = messagebox.askquestion("Confirm", "Do you wish to proceed ?")
 
     if message == "yes":
@@ -818,8 +817,8 @@ def dm_cust():
 
 def process_dm(cust_id, text):
     global dm_screen
-    from User_functions import accounts as acnt
-    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    import accounts as acnt
+    import otp_email_sender_yagmail as mail
     print(cust_id, text)
     ##SAVE YOUR REQUEST FROM HERE
 
@@ -889,9 +888,9 @@ def card_assn_page():
 
 def assn_card(cust, accnt, holder, card_com, cred_deb):
     global assn_screen
-    from User_functions import accounts as acnt
-    from User_functions.card_function import cardlog as cl
-    from User_functions.emailserver import otp_email_sender_yagmail as mail
+    import accounts as acnt
+    import cardlog as cl
+    import otp_email_sender_yagmail as mail
     import random
 
     try:

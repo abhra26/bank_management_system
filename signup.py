@@ -1,5 +1,5 @@
 def signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,passwd,variable,cust_id):
-    from User_functions import accounts as acnt
+    import accounts as acnt
     lis = get_custid_accntid()
     if variable == 'new_cust':
         acnt.addto_users(lis[0],lis[1], passwd, email, mobile, city, state, zipcode, aadhar, gender, name, address, dob)
@@ -12,7 +12,7 @@ def signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,passwd
 
 
 def get_custid_accntid():
-    from User_functions import accounts as acnt
+    import accounts as acnt
     con = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = con.cursor()
     cur.execute("SELECT accntid FROM users;")

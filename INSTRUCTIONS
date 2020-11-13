@@ -8,7 +8,7 @@ PLEASE GO THROUGH ALL THE POINTS MENTIONED BELOW PROPERLY TO UNDERSTAND THE REQU
         3. Internal Storage: more than 500GB
         4. MIDDLEWARE: Python 3.7.3 or above
         5. Backend : MYSQL 8.0 or above
-        6. IDE : Pycharm/VSCODE(recommended)
+        6. IDE : Pycharm(recommended)
 
 >>> PLEASE EXECUTE THE FOLLOWING COMMANDS IN YOUR TERMINAL/CMD:
         1. pip install Tkinter
@@ -20,7 +20,10 @@ PLEASE GO THROUGH ALL THE POINTS MENTIONED BELOW PROPERLY TO UNDERSTAND THE REQU
 
 >>> The program database file uploaded is in SQL INNODB format. To download the database please confirm if you have MYSQL INNODB AND MYSQLDUMP installed
     If installed please execute the following code in your TERMINAL/CMD/GUI for mysql:
-        1.
+        1. mysql -u root -p [datbase name]<dbbankexport.sql
+    If error is thrown then please check the link below:
+        https://stackoverflow.com/questions/5920136/mysql-is-not-recognised-as-an-internal-or-external-command-operable-program-or-b
+
 
 >>> Navigate to the Continental_user.py file and run it..enjoy :)
 

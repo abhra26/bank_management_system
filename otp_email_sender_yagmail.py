@@ -28,7 +28,7 @@ def register_mail(receiver_email,custid,accntid):
 
 def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_accnt = "N/A"):
     import datetime as dt
-    from User_functions.card_function import cardlog as cl
+    import cardlog as cl
     dame = str(dt.datetime.today())
     lis = dame.split()
     sender_email= "testdevelop12@gmail.com"
@@ -61,7 +61,7 @@ def status_email(receiver_email,object,cardno = 0):
     yag.send(receiver_email, subject, contents)
 # status_email("abhraneel2003@gmail.com","card",5412088017153251)
 def request_complete_email(receiver_email,req,desc):
-    from admin_functions import request_admin as r
+    import request_admin as r
     reqid = r.get_request_id(req)
     sender_email = "testdevelop12@gmail.com"
     subject = "Response to your Request"
