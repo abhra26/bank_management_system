@@ -292,7 +292,7 @@ def register_page():
     global stateID
     global aadharID
     global pincode
-    global Register_screen
+    global register_screen
 
 
     f_name = StringVar()
@@ -376,7 +376,7 @@ def register_page():
     Button_register = Button(frame, font=("Calibri", 22), text="Register", highlightbackground="#B4B4B4",
                              command=lambda: register(register_screen), width=15).grid(row=12, column=1)
     Gap4 = Label(register_screen, text=" ").grid(row=14, column=2)
-    Button_back = Button(register_screen, text="Back", highlightbackground="#B4B4B4", command=lambda: back(Register_screen)).grid(row=14,
+    Button_back = Button(register_screen, text="Back", highlightbackground="#B4B4B4", command=lambda: back(register_screen)).grid(row=14,
                                                                                                                  column=2,
                                                                                                                  sticky=E)
     Button_exit = Button(register_screen, text="Exit", highlightbackground="#B4B4B4", command=lambda: back(login_register)).grid(row=14,
@@ -482,7 +482,7 @@ def get_account(ac_no):
 
 def back(screen, value="back"):
     global credit_screen
-    global Register_screen
+    global register_screen
     global login_register
     global screen1
     global login_screen
@@ -498,7 +498,7 @@ def back(screen, value="back"):
     global company_screen
     global card_typo
 
-    if screen == credit_screen or screen == Register_screen:
+    if screen == credit_screen or screen == register_screen:
         warning = messagebox.askquestion("Confirm Form Resubmission!",
                                          "Turning back will take you to Account Selection Page!\n Do you wish to proceed ?")
         if warning == 'yes':
@@ -1381,7 +1381,7 @@ def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'
 
 ##FUNCTION EXECUTION
 login_register = None
-Register_screen = None
+register_screen = None
 credit_screen = None
 screen1 = None
 account_screen = None

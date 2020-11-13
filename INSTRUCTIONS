@@ -1,0 +1,27 @@
+GENERAL INSTRUCTIONS
+
+PLEASE GO THROUGH ALL THE POINTS MENTIONED BELOW PROPERLY TO UNDERSTAND THE REQUIREMENTS AND PROCEDURES:
+
+>>> REQUIREMENTS:
+        1. Operating system : WINDOWS 10/MACOSX and above
+        2. RAM : Atleast 8GB of RAM
+        3. Internal Storage: more than 500GB
+        4. MIDDLEWARE: Python 3.7.3 or above
+        5. Backend : MYSQL 8.0 or above
+        6. IDE : Pycharm/VSCODE(recommended)
+
+>>> PLEASE EXECUTE THE FOLLOWING COMMANDS IN YOUR TERMINAL/CMD:
+        1. pip install Tkinter
+        2. pip install tkinter
+        3. pip install mysql.connector
+        4. pip install Pillow
+        5. pip install PIL
+        6. pip install yagmail
+
+>>> The program database file uploaded is in SQL INNODB format. To download the database please confirm if you have MYSQL INNODB AND MYSQLDUMP installed
+    If installed please execute the following code in your TERMINAL/CMD/GUI for mysql:
+        1.
+
+>>> Navigate to the Continental_user.py file and run it..enjoy :)
+
+
