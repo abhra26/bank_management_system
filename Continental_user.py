@@ -2,12 +2,11 @@
 
 from tkinter import *
 from PIL import ImageTk, Image
-import login as lg
-import signup as sg
+from User_functions import login as lg, signup as sg
 import captcha_project as cp
 from tkinter import messagebox
 import sys
-import otp_email_sender_yagmail as mail
+from User_functions.emailserver import otp_email_sender_yagmail as mail
 
 print('''
 ......WELCOME TO CONTINENTAL BANK......
@@ -122,7 +121,7 @@ def login():
     global entry1
     global entry2
     global account_list
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global login_screen
     global volatile
     global ID_info_initial
@@ -160,7 +159,7 @@ def check_login():
     global ID_info
     global Password
     global wrong_login
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global login_register
     global ID_info_initial
     ID_info = str(ID.get())
@@ -390,7 +389,7 @@ def register(screen):
     captcha_page("register","na","na",screen)
 
 def accounts():
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global account_screen
     global ID_info
     account_screen = Tk()
@@ -431,7 +430,7 @@ def get_account(ac_no):
     global image_f
     global menu
     global accntid
-    import accounts as acnt
+    from User_functions import accounts as acnt
     accntid = ac_no
     status = acnt.get_status_account(accntid)
 
@@ -568,7 +567,7 @@ def deposit_withdraw_transfer(mode="withdraw"):
     global receiver_ac
     global entry_receiver
     global accntid
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
 
     if cl.has_card(accntid):
         c_no = IntVar()
@@ -700,7 +699,7 @@ def withdraw_or_deposit_value(mode):
     global typo
     global amt_value
     global receiver_ac
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
 
     card_number = int(c_no.get())  # int
     expiry_date = expiry.get()  # string
@@ -749,7 +748,7 @@ def check_card(mode="withdraw"):
     global typo
     global receiver_ac
     global entry_receiver
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global menu
     global card_number_initial
 
@@ -790,9 +789,9 @@ def check_card(mode="withdraw"):
                 typo.set("(Choose Type)")
 
 def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global wrong_credentials
-    import accounts as acnt
+    from User_functions import accounts as acnt
     global card_number_initial
     if cl.check_details(card_number,expiry_date,cvv,card_type):
         card_number_initial = []
@@ -814,8 +813,8 @@ def confirm_card(card_number, expiry_date, cvv, card_type,reciever_ac_id=0):
             return False
 
 def statement_page(ac_no):
-    import transaction as txn
-    import cardlog as cl
+    from User_functions import transaction as txn
+    from User_functions.card_function import cardlog as cl
     global image_f
     global statement_screen
 
@@ -866,7 +865,7 @@ def statement_page(ac_no):
 def otp_page(amount, card_number, receiver_ac_id, mode):
     global otp_screen
     global image_f
-    import accounts as acnt
+    from User_functions import accounts as acnt
 
     otp = mail.otp_mail(acnt.get_email(card_number))
     otp_screen = Toplevel()
@@ -892,7 +891,7 @@ def otp_page(amount, card_number, receiver_ac_id, mode):
                                                     mode)).grid(row=2, column=0, padx=20, pady=50)
 
 def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
-    import transaction as txn
+    from User_functions import transaction as txn
     if generated == entered:
         success = messagebox.showinfo("Success!",
                                       "OTP Verification Complete!\nYour Transaction is being processed.\nClick OK to return to confirm finally")
@@ -912,7 +911,7 @@ def check_otp(generated, entered, amount, card_number,reciever_ac_id, mode):
         otp_screen.destroy()
 
 def balance_page(accntid):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     try:
         balance = cl.get_balance(accntid)
         message = messagebox.showinfo("BALANCE",f"Your current balance is{balance}")
@@ -975,7 +974,7 @@ def cust_care_page():
 
 def process_request(cust_id, request, request_type):
     global cust_care_screen
-    import request_admin as r
+    from admin_functions import request_admin as r
     print(cust_id, request, request_type)
     ##SAVE YOUR REQUEST FROM HERE
     r.add_request(cust_id,request,request_type)
@@ -1020,7 +1019,7 @@ def card_type_page(ac_no):
                                                                                                                  column=0,
                                                                                                                  sticky=E)
 def check_eligible(screen):
-    import signup as sg
+    import User_functions.signup as sg
     global incomeamt
     global business_address
     global ssno
@@ -1247,10 +1246,10 @@ def refresh_captcha(form,visa_master,type_card,screen = 'NA'):
     captcha_page(form,visa_master,type_card,screen)
 
 def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     global ID_info
-    import otp_email_sender_yagmail as mail
-    import accounts as acnt
+    import User_functions.emailserver.otp_email_sender_yagmail as mail
+    from User_functions import accounts as acnt
 
     if gen_code == entry_code:
         if form == "register":
@@ -1345,7 +1344,7 @@ def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'
                 global aadhar_wife
                 global occupation
                 global income_wife
-                import accounts as acnt
+                from User_functions import accounts as acnt
 
                 try:
                     wife_name = fn.get() + " " + ln.get()

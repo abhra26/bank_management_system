@@ -71,7 +71,7 @@ def get_status_account(accntid):
     txt = cur.fetchall()[0][0]
     return txt
 def block_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     custids = get_allcustid()
@@ -87,7 +87,7 @@ def block_cust(custid):
         return False
 
 def block_accntid(custid,accntid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accntids = get_allaccntid()
@@ -103,7 +103,7 @@ def block_accntid(custid,accntid):
         return False
 
 def open_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     custids = get_allcustid()
@@ -119,7 +119,7 @@ def open_cust(custid):
         return False
 
 def open_accntid(custid,accntid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accntids = get_allaccntid()
@@ -135,7 +135,7 @@ def open_accntid(custid,accntid):
         return False
 
 def get_email(cardno='NA',custid='NA'):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     try:
@@ -222,8 +222,8 @@ def has_wife(cust):
         return False
 
 def delete_accnt(custid,accntid):
-    import cardlog as cl
-    import transaction as txn
+    from User_functions.card_function import cardlog as cl
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     if has_wife(custid):
@@ -284,7 +284,7 @@ def delete_accnt(custid,accntid):
         else:
             return False
 def delete_cust(custid):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     if custid in get_allcustid():
@@ -299,7 +299,7 @@ def delete_cust(custid):
     else:
         return False
 def update_users(custid,field,new_data,accntid = 0):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     field = field.lower()
@@ -333,7 +333,7 @@ def update_users(custid,field,new_data,accntid = 0):
             return False
 
 def update_creditacnt(custid,field,new_data,accntid=0):
-    import transaction as txn
+    from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     field = field.lower()
@@ -364,7 +364,7 @@ def update_creditacnt(custid,field,new_data,accntid=0):
         else:
             return False
 def update_spouse_details(custid,field,new_data):
-    import transaction as txn
+    from User_functions import transaction as txn
     d = {"Spouse's Name":"name","Spouse's Aadhar":"aadhar", "Spouse's Occupation":"occupation", "Spouse's Income":"income"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -433,7 +433,7 @@ def get_details_spouse(lis,custid):
 
     return result
 def get_details_accounts(lis,custid):
-    import cardlog as cl
+    from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     accounts = getno_of_acnts(custid)

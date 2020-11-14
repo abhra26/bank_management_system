@@ -7,7 +7,7 @@
 # cur2 = con2.cursor()
 
 def addto_acntcard(accntid,cardno,type):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f''' INSERT INTO acntcard VALUES
@@ -15,8 +15,8 @@ def addto_acntcard(accntid,cardno,type):
     con1.commit()
 
 def generate_creditcard(company):
-    import accounts as acnt
-    import card_no_gen as cg
+    from User_functions import accounts as acnt
+    from User_functions.card_function import card_no_gen as cg
     con2 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur2 = con2.cursor()
     cur2.execute('''SELECT cardno FROM cardlog;''')
@@ -33,7 +33,7 @@ def generate_creditcard(company):
 
 
 def addto_cardlog(cardno,cvv,expirydate,company,pin,balance=200000,status="open",cardlimit=200000):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
     cur1.execute(f'''INSERT INTO cardlog VALUES
@@ -41,7 +41,7 @@ def addto_cardlog(cardno,cvv,expirydate,company,pin,balance=200000,status="open"
     con1.commit()
 
 def get_cardno(accntid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
     cur1.execute(f' SELECT cardno FROM acntcard WHERE accntid = {accntid}')
@@ -53,7 +53,7 @@ def get_cardno(accntid):
     return final
 
 def get_balance(accntid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
     cur1.execute(f'''SELECT cardno FROM acntcard WHERE accntid = {accntid}''')
@@ -62,7 +62,7 @@ def get_balance(accntid):
     balance = cur1.fetchall()[0][0]
     return balance
 def get_balance_card(cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f''' SELECT balance FROM cardlog WHERE cardno = {cardno};''')
@@ -71,7 +71,7 @@ def get_balance_card(cardno):
 
 
 def update_balance(cardno,amount):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''UPDATE cardlog SET balance = {amount} WHERE cardno = {cardno}
@@ -79,7 +79,7 @@ def update_balance(cardno,amount):
     con1.commit()
 
 def check_details(card_number, expiry_date, cvv, card_type):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''SELECT cardno,expirydate,cvv,company FROM cardlog
@@ -96,7 +96,7 @@ def check_details(card_number, expiry_date, cvv, card_type):
         return False
 
 def get_accntid(cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''SELECT accntid FROM acntcard
@@ -112,21 +112,21 @@ def get_accntid(cardno):
 # print(get_accntid(5412088017153251))
 
 def get_limit(cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f''' SELECT cardlimit FROM cardlog WHERE cardno = {cardno}''')
     cardlimit = cur1.fetchall()[0][0]
     return cardlimit
 def get_card_status(cardno):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f''' SELECT status FROM cardlog WHERE cardno = {cardno}''')
     status = cur1.fetchall()[0][0]
     return status
 def has_card(acntid):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''SELECT cardno FROM acntcard WHERE accntid = {acntid}''')
@@ -136,8 +136,8 @@ def has_card(acntid):
     else:
         return True
 def block_card(custid,accntid,cardno):
-    import accounts as acnt
-    import transaction as txn
+    from User_functions import accounts as acnt
+    from User_functions import transaction as txn
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
     cur1.execute(f'''UPDATE cardlog SET status = "blocked" WHERE cardno = {cardno}''')
@@ -146,7 +146,7 @@ def block_card(custid,accntid,cardno):
     con1.commit()
 
 def get_allcards():
-    import accounts as acnt
+    from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = connection.cursor()
     cur.execute('''SELECT cardno FROM acntcard;
@@ -160,7 +160,7 @@ def get_allcards():
 
 
 def card_request(custid,accntid,visa_master,type_card,spouse = "no"):
-    import request_admin as r
+    from admin_functions import request_admin as r
     if spouse == "no":
         request = f"Application submitted for {type_card} card on account(id):{accntid},card company:{visa_master}"
         reqid = r.add_request(custid,request,"card_application",accntid)

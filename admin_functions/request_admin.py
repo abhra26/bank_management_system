@@ -1,5 +1,4 @@
-import transaction as txn
-import accounts as acnt
+from User_functions import transaction as txn, accounts as acnt
 
 
 def add_request(custid,request,req_type,accntid = 0):

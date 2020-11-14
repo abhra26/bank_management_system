@@ -1,5 +1,5 @@
 def login(custid ,passwd):
-    import accounts as acnt
+    from User_functions import accounts as acnt
     con = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = con.cursor()
     cur.execute("SELECT DISTINCT custid,passwd FROM users")

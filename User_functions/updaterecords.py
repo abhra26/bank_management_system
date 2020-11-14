@@ -1,4 +1,4 @@
-import accounts as acnt
+from User_functions import accounts as acnt
 
 
 def update_usr_rec(acntid,field):
