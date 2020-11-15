@@ -105,25 +105,6 @@ def add_history(description,cardno):
     connection.commit()
     return details
 
-def get_history(tid):
-    from User_functions import accounts as acnt
-    connection = acnt.establish_connection("localhost", "root", "vishal26", "bank")
-    cur = connection.cursor()
-    try:
-        cur.execute(f'''SELECT description,'on',date,'at',time FROM transactionlog
-        WHERE tid = '{tid}';
-        ''')
-        out = cur.fetchall()[0]
-        fin = ''
-        for i in range(len(out)):
-            fin += out[i]+' '
-
-        return fin
-    except:
-        return f'{tid} is an invalid transaction id'
-
-# print(get_history('txn883.2020-09-09.19:33:34.451760.155'))
-
 def ministatement(cardno):
     from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost','root','vishal26','bank')
@@ -174,6 +155,7 @@ def add_req_transac(description,custid,accntid=0,cardno = 0):
     cur.execute(f'''INSERT INTO transactionlog VALUES
     ('{rid}',{int(rid[3:6])},'{lis[0]}','{lis[-1]}','{description}',{cardno});''')
     connection.commit()
+    return rid
 
 def requeststatement(custid):
     from User_functions import accounts as acnt
@@ -199,6 +181,50 @@ def delete_request_requesttab(reqid):
     cur.execute(f'''DELETE FROM request WHERE reqid = '{reqid}'; 
             ''')
     connection.commit()
+
+def find_day(date):
+    import datetime
+    import calendar
+    stri = date.split('-')
+    stri.reverse()
+    new_date = ''
+    for i in stri:
+        new_date += i+' '
+    born = datetime.datetime.strptime(new_date.rstrip(), '%d %m %Y').weekday()
+    return (calendar.day_name[born])
+
+
+def get_history(custid,factor='',details=''):
+    from User_functions import accounts as acnt
+    connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
+    cur = connection.cursor()
+    result = []
+    if factor != '' and details != '':
+        cur.execute(f'''SELECT tid,date,time,description FROM transactionlog WHERE {factor.lower()} = '{details.lower()}' AND tid LIKE '%{custid}%';''')
+        out = cur.fetchall()
+        for i in out:
+            j = list(i)
+            j.insert(1,find_day(j[1]))
+            result.append(j)
+    else:
+        cur.execute(f'''SELECT tid,date,time,description FROM transactionlog WHERE tid LIKE '%{custid}%';''')
+        out = cur.fetchall()
+        for i in out:
+            j = list(i)
+            j.insert(1, find_day(j[1]))
+            result.append(j)
+
+    return result
+
+
+
+
+
+
+    connection.commit()
+
+
+
 
 
 # print(requeststatement('cstmr1'))

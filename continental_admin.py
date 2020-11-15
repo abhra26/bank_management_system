@@ -86,7 +86,10 @@ def home_page():
     button_email = Button(frame, font=("Calibri", 18), text="Email", bg="#B4B4B4", command=dm_cust, padx=120).grid(
         row=2, column=1, padx=40, pady=40, columnspan=1)
     button_assn = Button(frame, font=("Calibri", 18), text="Assign Card", bg="#B4B4B4", command=card_assn_page,
-                         padx=80).grid(row=3, column=0, columnspan=2, padx=40, pady=40)
+                         padx=80).grid(row=3, column=1, columnspan=1, padx=40, pady=40)
+
+    button_history = Button(frame, font=("Calibri", 18), text="History", bg="#B4B4B4", command=history_page,
+                            padx=120).grid(row=3, column=0, padx=40, pady=40, columnspan=1)
 
     button_back = Button(home_screen, font=("Calibri", 10), text="Back", bg="#B4B4B4",
                          command=lambda: back(home_screen)).grid(row=4, column=1, padx=20, pady=10, sticky=E)
@@ -95,6 +98,7 @@ def home_page():
                                                                                sticky=W)
 
     home_screen.mainloop()
+
 
 def service_status_page():
     global image_f
@@ -944,7 +948,134 @@ def assn_card(cust, accnt, holder, card_com, cred_deb):
     else:
         pass
 
-def back(screen, value="back"):
+def history_page():
+    global cust_screen_hist
+    global image_f
+
+    cust_screen_hist = Toplevel()
+    cust_screen_hist.title("The Continental")
+    cust_screen_hist.iconbitmap("Icon.ico")
+
+    logo = Label(cust_screen_hist, image=image_f).grid(row=0,column=0,columnspan=3)
+
+    frame = LabelFrame(cust_screen_hist, text = "ENTER CUSTOMER ID")
+    frame.grid(row=1, column=0, padx=80, pady=20)
+
+    label1 = Label(frame, font=("Calibri",18), text = "Cust ID: ").grid(row=0, column=0,pady=50,padx=10)
+
+    entry_id = Entry(frame, font=("Calibri",18))
+    entry_id.grid(row = 0, column =1, pady=30, padx=30)
+
+    Butt1 = Button(frame, text= "ENTER" ,command =lambda: get_hist_factor(entry_id.get()),  height=2, width = 15, bg ="#B4B4B4").grid(row=1,column=1, pady= 60)
+
+    button_back = Button(frame, font=("Calibri",10), text = "Back", bg="#B4B4B4", command =lambda: back(cust_screen_hist)).grid(row = 3, column=1, padx=20, pady=10, sticky= E)
+    button_exit = Button(frame, font=("Calibri",10), text = "Exit", bg="#B4B4B4", command =lambda: back(home_screen, value="exit")).grid(row = 3, column=0, padx=20, pady=10, sticky= W)
+
+def get_hist_factor(cust_id):
+    global factor_screen
+    global image_f
+    global cust_screen_hist
+
+    cust_screen_hist.destroy()
+
+    factor_screen = Toplevel()
+    factor_screen.title("The Continental")
+    factor_screen.iconbitmap("Icon.ico")
+
+    logo = Label(factor_screen, image=image_f).grid(row=0,column=0,columnspan=3)
+
+    frame = LabelFrame(factor_screen, text = "Enter Necessary factors for User History")
+    frame.grid(row=1, column=0, padx=80, pady=20)
+
+    li=["DATE","TIME"]
+    typo = StringVar()
+    typo.set("(Choose Type)")
+
+    label1 = Label(frame, font=("Calibri",18), text = "SORT BY \n Factor: ").grid(row=0, column=0,pady=25,padx=10)
+
+    entry_id = Entry(frame, font=("Calibri",18))
+    entry_id.grid(row = 1, column =0,columnspan=2, pady=30, padx=30)
+    entry_d = OptionMenu(frame, typo, *li)
+    entry_d.grid(row=0,column=1)
+
+    Butt1 = Button(frame, text= "OK" ,command =lambda: show_hist(cust_id, typo.get(), entry_id.get()),  height=2, width = 15, bg ="#B4B4B4").grid(row=2,column=0,columnspan=2, pady= 60)
+
+    button_back = Button(frame, font=("Calibri",10), text = "Back", bg="#B4B4B4", command =lambda: back(factor_screen)).grid(row = 3, column=1, padx=20, pady=10, sticky= E)
+    button_exit = Button(frame, font=("Calibri",10), text = "Exit", bg="#B4B4B4", command =lambda: back(home_screen, value="exit")).grid(row = 3, column=0, padx=20, pady=10, sticky= W)
+
+class ScrollableFrame02(ttk.Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = Canvas(self, width = 600, height = 300)
+        scrollbar1 = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollbar2 = ttk.Scrollbar(self, orient="horizontal", command=canvas.xview)
+        self.scrollable_frame = ttk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar1.set)
+        canvas.configure(xscrollcommand=scrollbar2.set)
+
+        canvas.grid(row=0,column=0)
+        scrollbar1.grid(row=0, column=100, rowspan=100, sticky='ns')
+        scrollbar2.grid(row=100,columnspan=100, sticky='we')
+
+
+
+def show_hist(cust_id, factor, extra_field_data):
+    global factor_screen
+    global image_f
+    global show_hist_screen
+    from User_functions import transaction as tx
+
+    factor_screen.destroy()
+
+    show_hist_screen = Toplevel()
+    show_hist_screen.title("The Continental")
+    show_hist_screen.iconbitmap("Icon.ico")
+
+    logo = Label(show_hist_screen, image=image_f).grid(row=0,column=0,columnspan=3)
+
+
+    frame = LabelFrame(show_hist_screen, text = "HISTORY OF CUST: "+ cust_id)
+    frame.grid(row=1, column=0, padx=80, pady=20)
+    frame_s = ScrollableFrame02(frame)
+
+    lst = [["Request ID", "Day", "Date", "Time", "Description"]]
+
+    lst2 = tx.get_history(cust_id,factor,extra_field_data)
+
+    for i in range(len(lst2)):
+        lst.append(lst2[i])
+
+    total_rows = len(lst)
+    total_columns = len(lst[0])
+
+
+
+    for i in range(total_rows):
+        for j in range(total_columns):
+
+            tab = Entry(frame_s.scrollable_frame , width=35,
+                           font=('Calibri',14,'bold'))
+
+            tab.grid(row=i, column=j,columnspan=1,sticky=W)
+            tab.insert(END, lst[i][j])
+            tab.config(state = "disabled")
+
+    frame_s.grid(row=0, column=0,padx=20, pady=20)
+    button_back = Button(frame, font=("Calibri",10), text = "Back", bg="#B4B4B4", command =lambda: back(show_hist_screen)).grid(row = total_rows+1, column=1, padx=20, pady=10, sticky= E)
+    button_exit = Button(frame, font=("Calibri",10), text = "Exit", bg="#B4B4B4", command =lambda: back(home_screen, value="exit")).grid(row = total_rows+1, column=0, padx=20, pady=10, sticky= W)
+
+
+def back(screen, value = "back"):
     global login_page
     global home_screen
     global service_status_screen
@@ -954,11 +1085,13 @@ def back(screen, value="back"):
     global details_screen
     global reply_screen
     global dm_screen
-    global assn_screen
+    global cust_screen_hist
+    global factor_screen
+    global show_hist_screen
 
     if screen == login_page:
         warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ? ?")
-        if warning == 'yes':
+        if warning =='yes':
             screen.destroy()
         else:
             pass
@@ -966,19 +1099,19 @@ def back(screen, value="back"):
     elif screen == home_screen:
         if value == "exit":
             warning = messagebox.askquestion("WARNING!", "Are you sure You want to Exit ? ?")
-            if warning == 'yes':
+            if warning =='yes':
                 screen.destroy()
             else:
                 pass
         else:
             warning = messagebox.askquestion("WARNING!", "You will be logged out!\nDo you still wish to proceed?")
-            if warning == 'yes':
+            if warning =='yes':
                 screen.destroy()
                 admin_login()
             else:
                 pass
 
-    elif screen == service_status_screen or screen == card_app_screen or screen == update_screen or screen == cust_screen or screen == others_screen or screen == dm_screen or screen == assn_screen:
+    elif screen == service_status_screen or screen == card_app_screen or screen == update_screen or screen == cust_screen or screen == others_screen or screen == dm_screen or screen == cust_screen_hist:
         screen.destroy()
 
     elif screen == requests_screen:
@@ -992,6 +1125,15 @@ def back(screen, value="back"):
     elif screen == reply_screen:
         screen.destroy()
         others_page()
+    elif screen == factor_screen:
+        screen.destroy()
+        history_page()
+    elif screen == show_hist_screen:
+        warning = messagebox.askquestion("WARNING!", "You will be taken back to Menu.\nDo you confirm ?")
+        if warning =='yes':
+            screen.destroy()
+        else:
+            pass
 
 
 login_page = None
@@ -999,13 +1141,14 @@ home_screen = None
 service_status_screen = None
 card_app_screen = None
 requests_screen = None
-update_screen = None
+update_screen= None
 cust_screen = None
+cust_screen_hist = None
 details_screen = None
 others_screen = None
 reply_screen = None
 dm_screen = None
-assn_screen = None
+factor_screen = None
+show_hist_screen = None
 
 admin_login()
-##

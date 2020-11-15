@@ -81,7 +81,10 @@ def block_cust(custid):
             ''')
         conection.commit()
         description = f'customer id {custid} blocked due to security reasons'
-        txn.add_req_transac(description,custid)
+        rid = txn.add_req_transac(description,custid)
+        cur.execute(f'''INSERT INTO service_stat_log VALUES
+        ('{rid}','{custid}',{0},'{description}');''')
+        conection.commit()
         return True
     else:
         return False
@@ -96,7 +99,9 @@ def block_accntid(custid,accntid):
                 WHERE accntid = {accntid};
                 ''')
         description = f'Account id {accntid} blocked for security reasons'
-        txn.add_req_transac(description,custid,accntid)
+        rid = txn.add_req_transac(description, custid)
+        cur.execute(f'''INSERT INTO service_stat_log VALUES
+        ('{rid}','{custid}',{accntid},'{description}');''')
         conection.commit()
         return True
     else:
@@ -113,7 +118,10 @@ def open_cust(custid):
             ''')
         conection.commit()
         description = f'customer id {custid} opened'
-        txn.add_req_transac(description,custid)
+        rid = txn.add_req_transac(description, custid)
+        cur.execute(f'''INSERT INTO service_stat_log VALUES
+        ('{rid}','{custid}',{0},'{description}');''')
+        conection.commit()
         return True
     else:
         return False
@@ -128,7 +136,9 @@ def open_accntid(custid,accntid):
                 WHERE accntid = {accntid};
                 ''')
         description = f'Account id {accntid} opened'
-        txn.add_req_transac(description,custid,accntid)
+        rid = txn.add_req_transac(description, custid)
+        cur.execute(f'''INSERT INTO service_stat_log VALUES
+        ('{rid}','{custid}',{accntid},'{description}');''')
         conection.commit()
         return True
     else:
@@ -154,13 +164,6 @@ def get_name(custid):
     cur.execute(f'''SELECT name FROM users WHERE custid = '{custid}';''')
     result = cur.fetchone()[0]
     return result
-
-# def addto_spouse_credit_card_appl(cardno,custid,name,dob,aadhar,income,card_type,card_company,occupation):
-#     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
-#     cur = conection.cursor()
-#     cur.execute(f'''INSERT INTO card_applications VALUES
-#     ('{custid}',{accntid},'{name}','{dob}',{phone},{aadhar},{income},'{card_type}','{card_company}','{occupation}');''')
-#     conection.commit()
 
 def addto_spouse_credit_card_appl(custid,accntid,name,dob,phone,aadhar,income,card_type,card_company,occupation):
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -255,7 +258,10 @@ def delete_accnt(custid,accntid):
             cur.execute(f'''DELETE FROM users WHERE accntid = {accntid};''')
             conection.commit()
             description = f"account id: {accntid} deleted"
-            txn.add_req_transac(description,custid,accntid)
+            rid = txn.add_req_transac(description, custid)
+            cur.execute(f'''INSERT INTO service_stat_log VALUES
+            ('{rid}','{custid}',{accntid},'{description}');''')
+            conection.commit()
             return True
         else:
             return False
@@ -279,7 +285,10 @@ def delete_accnt(custid,accntid):
             cur.execute(f'''DELETE FROM users WHERE accntid = {accntid};''')
             conection.commit()
             description = f"account id: {accntid} deleted"
-            txn.add_req_transac(description, custid, accntid)
+            rid = txn.add_req_transac(description, custid)
+            cur.execute(f'''INSERT INTO service_stat_log VALUES
+            ('{rid}','{custid}',{accntid},'{description}');''')
+            conection.commit()
             return True
         else:
             return False
@@ -294,7 +303,10 @@ def delete_cust(custid):
             for j in i:
                 delete_accnt(custid,j)
         description = f"customer:{custid} deleted"
-        txn.add_req_transac(description,custid)
+        rid = txn.add_req_transac(description, custid)
+        cur.execute(f'''INSERT INTO service_stat_log VALUES
+        ('{rid}','{custid}',{0},'{description}' and service ended);''')
+        conection.commit()
         return True
     else:
         return False
