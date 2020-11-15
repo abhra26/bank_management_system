@@ -7,7 +7,7 @@ def otp_mail(receiver_email):
         s=s+i+"\u0332"
     sender_email= "testdevelop12@gmail.com"
     subject="Verification code"
-    password="good_work7"
+    password="goodwork_7"
     yag=yagmail.SMTP({sender_email:"Continental Bank"},password=password)
     contents=f"Respected Customer,\n\nYour otp verification code for your transaction process is {s}.\nPlease do not share this code with anyone.\nHave a great day.\nThank You for choosing Continental Bank.\n\nRegards,\nCustomer Care\nContinental Bank"
     yag.send(receiver_email,subject,contents)
@@ -19,12 +19,12 @@ def otp_mail(receiver_email):
 def register_mail(receiver_email,custid,accntid):
     sender_email= "testdevelop12@gmail.com"
     subject="New service"
-    password="good_work7"
+    password="goodwork_7"
     yag=yagmail.SMTP({sender_email:"Continental Bank"},password=password)
     contents=f"Respected Customer,\n\nYour registration was successful.\nThe customer id to your new service is {custid},\nYour accountid is {accntid}.\nPlease do not share these details with anyone.\nHave a great day.\nThank You for choosing Continental Bank.\n\nRegards,\nCustomer Care\nContinental Bank"
     yag.send(receiver_email,subject,contents)
 
-# register_mail("saikatsahoo1402@yahoo.co.in","cstmr1",1)
+# register_mail("abhraneels@yahoo.com","cstmr1",1)
 
 def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_accnt = "N/A"):
     import datetime as dt
@@ -33,7 +33,7 @@ def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_ac
     lis = dame.split()
     sender_email= "testdevelop12@gmail.com"
     subject="Transaction made"
-    password="good_work7"
+    password="goodwork_7"
     yag=yagmail.SMTP({sender_email:"Continental Bank"},password=password)
     prim_cardno = str(prim_cardno)
     digits = prim_cardno[len(prim_cardno)-3:]
@@ -50,7 +50,7 @@ def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_ac
 def status_email(receiver_email,object,cardno = 0):
     sender_email = "testdevelop12@gmail.com"
     subject = "Transaction made"
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     if cardno == 0:
         contents = f"Respected Customer,\n\nSUSPICIOUS ACTIVITY has been noticed on your {object.upper()},due to which it has been BLOCKED(vide:Security Policy).\nPlease contact customer care for detailed information\n\nThank you\nRegards,\nCustomer Care\nContinental Bank"
@@ -65,7 +65,7 @@ def request_complete_email(receiver_email,req,desc):
     reqid = r.get_request_id(req)
     sender_email = "testdevelop12@gmail.com"
     subject = "Response to your Request"
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     contents = f"Respected Customer,\n\nResponding to your request placed vide:{reqid},\n{desc}.\nPlease contact customer care for more details,if required.\n\nThank you\nRegards,\nCustomer Care\nContinental Bank"
     yag.send(receiver_email, subject, contents)
@@ -73,7 +73,7 @@ def request_complete_email(receiver_email,req,desc):
 def request_complete_email_card(receiver_email,reqid,desc):
     sender_email = "testdevelop12@gmail.com"
     subject = "Response to your Request"
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     contents = f"Respected Customer,\n\nResponding to your request placed vide:{reqid},\n{desc}.\nPlease contact customer care for more details,if required.\n\nThank you\nRegards,\nCustomer Care\nContinental Bank"
     yag.send(receiver_email, subject, contents)
@@ -81,7 +81,7 @@ def request_complete_email_card(receiver_email,reqid,desc):
 def general_mail(receiver_email,contents):
     sender_email = "testdevelop12@gmail.com"
     subject = " "
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     contents = f'Respected Customer,\n{contents}.\n\nThank you\nRegards,\nCustomer Care\nContinental Bank"'
     yag.send(receiver_email, subject, contents)
@@ -89,7 +89,7 @@ def general_mail(receiver_email,contents):
 def card_application_mail(receiver_email,custid,accntid,requestid):
     sender_email = "testdevelop12@gmail.com"
     subject = "Card application submitted"
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     contents = f"Your application for a new card on:-\ncustomer id: {custid},accntid:{accntid}\nhas been succesfully submitted.\nYour resquest id is:{requestid}.Please keep this id for further use.\nHave a great day."
     contents = f'Respected Customer,\n{contents}.\n\nThank you\nRegards,\nCustomer Care\nContinental Bank"'
@@ -98,7 +98,7 @@ def card_application_mail(receiver_email,custid,accntid,requestid):
 def card_assign_mail(receiver_email,cardno,accntid,custid,cvv,expiry,balance,pin,cardcom,cred_deb):
     sender_email = "testdevelop12@gmail.com"
     subject = f"new transaction card"
-    password = "good_work7"
+    password = "goodwork_7"
     yag = yagmail.SMTP({sender_email: "Continental Bank"}, password=password)
     pin = 'XX'+str(pin)[2:]
     contents = f"Your application for a new card on:-\ncustomer id: {custid},accntid:{accntid} has been approved.\nThe details of your card are as below\nCardno: {cardno}\nCVV: {cvv}\nExpires on: {expiry}\nCompany-type: {cardcom}-{cred_deb}\nPin: {pin}\nLimit: {balance}.Please keep the details for further use.\nDo not share with any other external agencies or entities.\nHave a great day."

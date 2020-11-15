@@ -1293,39 +1293,41 @@ def check_captcha(form, gen_code, entry_code,visa_master,type_card,screen = 'NA'
                 state = stateID.get()
                 aadhar = int(aadharID.get())  # int
                 zipcode = int(pincode.get())  # int
-            ##You use your function for SQL anywhere here
+                ##You use your function for SQL anywhere here
                 if variable == "new_cust":
                     lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, passwd,
-                                variable, 'cstmr')
+                                    variable, 'cstmr')
                 else:
                     ID_info = ID.get()
                     Password = Pass.get()
                     lis = sg.signup(name, dob, email, gender, mobile, address, city, state, aadhar, zipcode, Password,
-                                variable, ID_info)
+                                    variable, ID_info)
                 acntype = choice.get()
                 if acntype == "CREDIT":
                     income = int(incomeamt.get())  # int
                     work_address = business_address.get()
                     security_number = int(ssno.get())  # int
                     profit = int(profitpa.get())  # int
-                    acnt.addto_creditacnts(lis[0], lis[1], work_address, income, profit, security_number, income + profit,
-                                       0, 'NA')
+                    acnt.addto_creditacnts(lis[0], lis[1], work_address, income, profit, security_number,
+                                           income + profit,
+                                           0, 'NA')
                     acnt.addto_acnttype(lis[1], "Credit")
 
                 elif acntype == "DEBIT":
                     acnt.addto_acnttype(lis[1], "Debit")
                 else:
                     acnt.addto_acnttype(lis[1], "Savings")
-            ##Last Lines
+                ##Last Lines
                 mail.register_mail(str(email), lis[0], lis[1])
                 success = messagebox.showinfo("SUCCESS!",
-                                          f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
+                                              f"Registration Successful! You can now Login \n Your Customer ID is {lis[0]} \n Your account id is {lis[1]}")
                 if success == "ok":
                     screen.destroy()
                     captcha_screen.destroy()
             except:
-                error = messagebox.showerror("ERROR 404!","REGISTRATION FAILED")
+                error = messagebox.showerror("ERROR 404!", "REGISTRATION FAILED")
                 sys.exit(0)
+
 
         elif form == "card_application":
             if type_card == "DEBIT":
