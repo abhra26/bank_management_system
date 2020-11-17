@@ -122,7 +122,7 @@ def login():
             else:
                 pass
     except:
-        message = messagebox.showerror("ERROR!", "Login Unseccessful. \nTry Again")
+        message = messagebox.showerror("ERROR!", "Login Unsuccessful. \nTry Again")
         if message == 'ok':
             pass
         else:

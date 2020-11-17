@@ -1134,6 +1134,8 @@ def back(screen, value = "back"):
             screen.destroy()
         else:
             pass
+    else:
+        screen.destroy()
 
 
 login_page = None
