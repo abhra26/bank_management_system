@@ -1,12 +1,6 @@
-# import accounts as acnt
-# import sys
-#
-# con1 = acnt.establish_connection('localhost','root','vishal26','bank')
-# con2 = acnt.establish_connection('localhost','root','vishal26','cards')
-# cur1 = con1.cursor()
-# cur2 = con2.cursor()
 
 def addto_acntcard(accntid,cardno,type):
+    '''The function adds data to acntcard table of database bank'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -15,6 +9,7 @@ def addto_acntcard(accntid,cardno,type):
     con1.commit()
 
 def generate_creditcard(company):
+    '''The function generates and returns a creditcard'''
     from User_functions import accounts as acnt
     from User_functions.card_function import card_no_gen as cg
     con2 = acnt.establish_connection('localhost','root','vishal26','bank')
@@ -33,6 +28,7 @@ def generate_creditcard(company):
 
 
 def addto_cardlog(cardno,cvv,expirydate,company,pin,balance=200000,status="open",cardlimit=200000):
+    '''The function adds data to cardlog table of database bank'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
@@ -41,6 +37,7 @@ def addto_cardlog(cardno,cvv,expirydate,company,pin,balance=200000,status="open"
     con1.commit()
 
 def get_cardno(accntid):
+    '''The function returns the cards of an account'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
@@ -53,6 +50,7 @@ def get_cardno(accntid):
     return final
 
 def get_balance(accntid):
+    '''The function returns the balance of an account'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost','root','vishal26','bank')
     cur1 = con1.cursor()
@@ -62,6 +60,7 @@ def get_balance(accntid):
     balance = cur1.fetchall()[0][0]
     return balance
 def get_balance_card(cardno):
+    '''The function returns the balance of a card'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -71,6 +70,7 @@ def get_balance_card(cardno):
 
 
 def update_balance(cardno,amount):
+    '''The function updates the balance of a card'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -79,6 +79,7 @@ def update_balance(cardno,amount):
     con1.commit()
 
 def check_details(card_number, expiry_date, cvv, card_type):
+    '''The function checks the validity of the credentials entered during transaction'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -96,6 +97,7 @@ def check_details(card_number, expiry_date, cvv, card_type):
         return False
 
 def get_accntid(cardno):
+    '''The function returns the account id linked to a card'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -105,13 +107,8 @@ def get_accntid(cardno):
     result = cur1.fetchall()[0][0]
     return result
 
-
-
-# print(check_details(5412088017153251,'13-10-2030',890,'mastercard'))
-
-# print(get_accntid(5412088017153251))
-
 def get_limit(cardno):
+    '''The function returns the limit of a card'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -119,6 +116,7 @@ def get_limit(cardno):
     cardlimit = cur1.fetchall()[0][0]
     return cardlimit
 def get_card_status(cardno):
+    '''The function returns the card status(block/open) of a card'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -126,6 +124,7 @@ def get_card_status(cardno):
     status = cur1.fetchall()[0][0]
     return status
 def has_card(acntid):
+    '''The function returns whether a account has a card or not'''
     from User_functions import accounts as acnt
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur1 = con1.cursor()
@@ -136,6 +135,7 @@ def has_card(acntid):
     else:
         return True
 def block_card(custid,accntid,cardno):
+    '''The function blocks a card'''
     from User_functions import accounts as acnt
     from User_functions import transaction as txn
     con1 = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -146,6 +146,7 @@ def block_card(custid,accntid,cardno):
     con1.commit()
 
 def get_allcards():
+    '''The function returns all cards in database bank'''
     from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = connection.cursor()
@@ -160,6 +161,7 @@ def get_allcards():
 
 
 def card_request(custid,accntid,visa_master,type_card,spouse = "no"):
+    '''The function add and returns request id regarding card application'''
     from admin_functions import request_admin as r
     if spouse == "no":
         request = f"Application submitted for {type_card} card on account(id):{accntid},card company:{visa_master}"

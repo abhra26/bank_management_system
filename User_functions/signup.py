@@ -1,4 +1,6 @@
 def signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,passwd,variable,cust_id):
+    '''This function adds the details of customers to users depending on the condition
+    where new customer or not'''
     from User_functions import accounts as acnt
     lis = get_custid_accntid()
     if variable == 'new_cust':
@@ -12,6 +14,7 @@ def signup(name,dob,email,gender,mobile,address,city,state,aadhar,zipcode,passwd
 
 
 def get_custid_accntid():
+    '''The funtion genereates new customer id and account id for registering customer'''
     from User_functions import accounts as acnt
     con = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = con.cursor()
@@ -29,6 +32,7 @@ def get_custid_accntid():
     return [custid,accntid]
 
 def eligibility_credit(income):
+    '''The function checks the eligibility of a customer for a credit account'''
     if income>200000:
         return True
     else:

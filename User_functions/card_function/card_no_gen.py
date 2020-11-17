@@ -22,6 +22,7 @@ def check(x):
         return 1
 
 def mastercard(L):
+    '''The function returns a generated new mastercard number'''
     c=1
     while(c==1):
         n=random.randint(51*math.pow(10,14),(56*math.pow(10,14))-1)
@@ -33,6 +34,7 @@ def mastercard(L):
     return n
 
 def visa(L):
+    '''The function returns a generated new visa card number'''
     c=1
     while(c==1):
         b=random.randrange(13,17,3)
@@ -44,17 +46,20 @@ def visa(L):
             c=1
     return n
 def generate_card(type,lis):
+    '''The function generates the respective card depending on the instituition'''
     if type in ['VISA','Visa','visa']:
         return visa(lis)
     else:
         return mastercard(lis)
 def cvv():
+    '''The function generates a cvv'''
     import random
     cvv = random.randint(100,999)
     return cvv
 def expiry():
+    '''The function generates a expiry date'''
     import random
-    year = random.randint(2021,2050)
+    year = random.randint(2040,2050)
     month = random.randint(1,12)
     return str(year)+'-'+str(month)
 

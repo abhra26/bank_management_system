@@ -1,4 +1,5 @@
 def login(custid ,passwd):
+    '''The function helps in authentication during login'''
     from User_functions import accounts as acnt
     con = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = con.cursor()

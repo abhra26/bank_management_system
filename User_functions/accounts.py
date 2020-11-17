@@ -1,5 +1,6 @@
 
 def establish_connection(host, user, passwd, database):
+    '''Establishes connection with local database, throws exception(not error) if connection not established'''
     import mysql.connector as cntr
     from mysql.connector import Error
     connection = None
@@ -18,6 +19,7 @@ def establish_connection(host, user, passwd, database):
 
 
 def addto_users(custid,accntid,passwd,email,mobile,city,state,zipcode,aadhar,gender,name,address,dob,status = "open"):
+    '''This function adds to the users table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO users VALUES
@@ -26,6 +28,7 @@ def addto_users(custid,accntid,passwd,email,mobile,city,state,zipcode,aadhar,gen
     conection.commit()
 
 def addto_creditacnts(custid,accntid,business,granin,profit,ssc ,turnover,debt,timelimit):
+    '''This function adds to the creditacnts table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO creditacnts VALUES
@@ -34,6 +37,7 @@ def addto_creditacnts(custid,accntid,business,granin,profit,ssc ,turnover,debt,t
     conection.commit()
 
 def addto_acntcard(accntid,cardno,type):
+    '''This function adds to the acntcard table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO acntcard VALUES
@@ -42,6 +46,7 @@ def addto_acntcard(accntid,cardno,type):
     conection.commit()
 
 def addto_acnttype(accntid,type):
+    '''This function adds to the acnttype table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO acnttype VALUES
@@ -50,6 +55,7 @@ def addto_acnttype(accntid,type):
     conection.commit()
 
 def getno_of_acnts(cust_id):
+    '''This function helps to get all the accounts of a customer in a list from the database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT accntid FROM USERS
@@ -63,6 +69,7 @@ def getno_of_acnts(cust_id):
 
     return result
 def get_status_account(accntid):
+    '''This function returns the service status(block/open) of the account linked with the entered accntid'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT status FROM USERS
@@ -71,6 +78,7 @@ def get_status_account(accntid):
     txt = cur.fetchall()[0][0]
     return txt
 def block_cust(custid):
+    '''This function blocks a customer'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -90,6 +98,7 @@ def block_cust(custid):
         return False
 
 def block_accntid(custid,accntid):
+    '''This function blocks a customer and accntid'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -108,6 +117,7 @@ def block_accntid(custid,accntid):
         return False
 
 def open_cust(custid):
+    '''This function opens a customer'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -127,6 +137,7 @@ def open_cust(custid):
         return False
 
 def open_accntid(custid,accntid):
+    '''This function opens a customer and accntid'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -145,6 +156,7 @@ def open_accntid(custid,accntid):
         return False
 
 def get_email(cardno='NA',custid='NA'):
+    '''This function returns the email of the user linked to a cardnumber or a customer id'''
     from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -159,6 +171,7 @@ def get_email(cardno='NA',custid='NA'):
         return result
 
 def get_name(custid):
+    '''This function returns the name of a customer'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT name FROM users WHERE custid = '{custid}';''')
@@ -166,6 +179,7 @@ def get_name(custid):
     return result
 
 def addto_spouse_credit_card_appl(custid,accntid,name,dob,phone,aadhar,income,card_type,card_company,occupation):
+    '''This function adds to the card_applications table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO card_applications VALUES
@@ -173,6 +187,7 @@ def addto_spouse_credit_card_appl(custid,accntid,name,dob,phone,aadhar,income,ca
     conection.commit()
 
 def addto_spouse_card(cardno,name,dob,aadhar,occupation,income,custid):
+    '''This function adds to the spouse_credit_cards table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''INSERT INTO spouse_credit_cards VALUES
@@ -182,6 +197,7 @@ def addto_spouse_card(cardno,name,dob,aadhar,occupation,income,custid):
 
 
 def get_allcustid():
+    '''This function helps to get all the customer ids of a customer in the database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute('''SELECT DISTINCT custid FROM users;''')
@@ -193,6 +209,7 @@ def get_allcustid():
     return result
 
 def get_allaccntid():
+    '''This function helps to get all the account ids of a customer in the database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute('''SELECT accntid FROM users;''')
@@ -204,6 +221,7 @@ def get_allaccntid():
     return result
 
 def has_wife(cust):
+    '''This function helps to return whether a customer has a card for his spouse or not'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     cur.execute(f'''SELECT custid FROM spouse_credit_cards;''')
@@ -225,6 +243,7 @@ def has_wife(cust):
         return False
 
 def delete_accnt(custid,accntid):
+    '''This function deletes the accounts of a customer linked to a customer id'''
     from User_functions.card_function import cardlog as cl
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -293,6 +312,7 @@ def delete_accnt(custid,accntid):
         else:
             return False
 def delete_cust(custid):
+    '''This function deletes the customer from database bank'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -311,6 +331,7 @@ def delete_cust(custid):
     else:
         return False
 def update_users(custid,field,new_data,accntid = 0):
+    '''This function updates the data of the customer in the users table of database bank'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -345,6 +366,7 @@ def update_users(custid,field,new_data,accntid = 0):
             return False
 
 def update_creditacnt(custid,field,new_data,accntid=0):
+    '''This function updates the data of a customer in the creditacnts table of dabatase bank'''
     from User_functions import transaction as txn
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
@@ -376,6 +398,7 @@ def update_creditacnt(custid,field,new_data,accntid=0):
         else:
             return False
 def update_spouse_details(custid,field,new_data):
+    '''This function updates the data of a customer in the spouse_credit_cards table of dabatase bank'''
     from User_functions import transaction as txn
     d = {"Spouse's Name":"name","Spouse's Aadhar":"aadhar", "Spouse's Occupation":"occupation", "Spouse's Income":"income"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -395,6 +418,7 @@ def update_spouse_details(custid,field,new_data):
         return False
 
 def get_details_users(lis,custid):
+    '''This function returns all the details of a customer from users table in database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     result = []
@@ -408,6 +432,7 @@ def get_details_users(lis,custid):
 # print(get_details_users(["Name:", "DOB:", "Email:", "Mobile:", "Address:", "Aadhar:"],'cstmr1'))
 
 def get_details_credit(lis,custid):
+    '''This function returns the details of the credit account of the customer in the database bank'''
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()
     result = []
@@ -419,6 +444,7 @@ def get_details_credit(lis,custid):
     return result
 
 def get_details_spouse(lis,custid):
+    '''This function returns the details of the spouse account of the customer in the database bank'''
     d = {"Spouse's Name": "name", "Spouse's Aadhar": "aadhar", "Spouse's Occupation": "occupation",
          "Spouse's Income": "income","Credit Card" : "cardno"}
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
@@ -445,6 +471,7 @@ def get_details_spouse(lis,custid):
 
     return result
 def get_details_accounts(lis,custid):
+    '''This function returns the details of the accounts of the customer in the database bank'''
     from User_functions.card_function import cardlog as cl
     conection = establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = conection.cursor()

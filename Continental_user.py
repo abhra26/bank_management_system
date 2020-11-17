@@ -8,33 +8,6 @@ from tkinter import messagebox
 import sys
 from User_functions.emailserver import otp_email_sender_yagmail as mail
 
-print('''
-......WELCOME TO CONTINENTAL BANK......
-published by : @abhraneel_saha, @arijeet_pramanik,@kunj_gupta
-Description : It is a local virtual bank management system set up
-              to describe the python-mysql interface. This is our
-              submission for the computer project assignment for 
-              the accademic session of 2020-21 of class XII. Stay safe and healthy.
-              Please do listen our explaination. Thank you.
-
-XXXXXXXX SPECIFICATIONS XXXXXXXXX
-
-# Developed on : MACBOOK PRO,
-                 13inches, 
-                 8GB RAM, 
-                 512GB internal memory,
-                 MACOS mojave, 
-                 intel core i5 
-
-#FRONT END : Tkinter
-#MIDDLE-WARE: PYTHON
-#BACKEND : MYSQL
-
-XXXXXXXX END XXXXXXXXX
-
-........PROGRAM BEGINS FROM HERE.......
-''')
-
 ID_info = ""
 ID_info_initial = []
 volatile = 0

@@ -1,6 +1,7 @@
 import yagmail, random
 
 def otp_mail(receiver_email):
+    '''The function sends an email to the customer containing a one time passcode for the transaction'''
     n=str(random.randint(10000,99999))
     s=''
     for i in n:
@@ -17,6 +18,7 @@ def otp_mail(receiver_email):
 # otp_mail("kunj7dgupta@gmail.com")
 
 def register_mail(receiver_email,custid,accntid):
+    '''The function sends an email to the customer containing the details of the new service'''
     sender_email= "testdevelop12@gmail.com"
     subject="New service"
     password="goodwork_7"
@@ -27,6 +29,7 @@ def register_mail(receiver_email,custid,accntid):
 # register_mail("abhraneels@yahoo.com","cstmr1",1)
 
 def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_accnt = "N/A"):
+    '''The function sends an email to the customer containing the details of the commercial transaction carried out'''
     import datetime as dt
     from User_functions.card_function import cardlog as cl
     dame = str(dt.datetime.today())
@@ -48,6 +51,7 @@ def transacttion_mail(receiver_email,accntid,tid,prim_cardno,ammount,mode,sec_ac
 # transacttion_mail("abhraneel2003@gmail.com",1,"txn956.2020-10-01.15:34:17.545006.251",5412088017153251,5000,"withdrawn")
 
 def status_email(receiver_email,object,cardno = 0):
+    '''The function sends an email to the customer informing about the changed status(blocked/open) of their account'''
     sender_email = "testdevelop12@gmail.com"
     subject = "Transaction made"
     password = "goodwork_7"
@@ -61,6 +65,7 @@ def status_email(receiver_email,object,cardno = 0):
     yag.send(receiver_email, subject, contents)
 # status_email("abhraneel2003@gmail.com","card",5412088017153251)
 def request_complete_email(receiver_email,req,desc):
+    '''The function sends an email in response to the request placed by a customer'''
     from admin_functions import request_admin as r
     reqid = r.get_request_id(req)
     sender_email = "testdevelop12@gmail.com"
@@ -71,6 +76,7 @@ def request_complete_email(receiver_email,req,desc):
     yag.send(receiver_email, subject, contents)
 
 def request_complete_email_card(receiver_email,reqid,desc):
+    '''The function sends an email in response to the request placed by a customer'''
     sender_email = "testdevelop12@gmail.com"
     subject = "Response to your Request"
     password = "goodwork_7"
@@ -79,6 +85,7 @@ def request_complete_email_card(receiver_email,reqid,desc):
     yag.send(receiver_email, subject, contents)
 
 def general_mail(receiver_email,contents):
+    '''The function sends a general mail to a customer'''
     sender_email = "testdevelop12@gmail.com"
     subject = " "
     password = "goodwork_7"
@@ -87,6 +94,7 @@ def general_mail(receiver_email,contents):
     yag.send(receiver_email, subject, contents)
 
 def card_application_mail(receiver_email,custid,accntid,requestid):
+    '''The function sends a mail to the customer regarding his card application'''
     sender_email = "testdevelop12@gmail.com"
     subject = "Card application submitted"
     password = "goodwork_7"
@@ -96,6 +104,7 @@ def card_application_mail(receiver_email,custid,accntid,requestid):
     yag.send(receiver_email, subject, contents)
 
 def card_assign_mail(receiver_email,cardno,accntid,custid,cvv,expiry,balance,pin,cardcom,cred_deb):
+    '''The function sends a mail to the customer containg the details of the new card'''
     sender_email = "testdevelop12@gmail.com"
     subject = f"new transaction card"
     password = "goodwork_7"

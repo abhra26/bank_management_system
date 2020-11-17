@@ -1,6 +1,7 @@
 
 
 def gen_utid(file = 'utids'):
+    '''The function generates and returns a unique transaction id for a transaction caried out'''
     import random
     fl = open(file,'r+')
     utids = fl.read()
@@ -14,14 +15,13 @@ def gen_utid(file = 'utids'):
         return str(num)
 
 def gen_tid(cardno,datetime,file="utids"):
+    '''The function generates and returns the transaction id for a transaction carried out'''
     carddig = str(cardno)[-1:-4:-1]
     utid = str(gen_utid(file))
     return 'txn'+utid+'.'+datetime+'.'+carddig[-1:-4:-1]
-# print(gen_tid(5412088017153251,"2020-10-3.12.00.00.00"))
-
-
 
 def withdraw(amount,cardno):
+    '''The function carries out the process of withdrawing e-money from a customers account'''
     from User_functions.card_function import cardlog as cl
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
@@ -43,6 +43,7 @@ def withdraw(amount,cardno):
         return f"Insufficient funds, balance={in_balance}"
 
 def deposit(amount,cardno):
+    '''The function carries out the process of depositing e-money to a customers account'''
     from User_functions.card_function import cardlog as cl
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
@@ -61,6 +62,7 @@ def deposit(amount,cardno):
     return f"transaction successful,\nbalance={cl.get_balance_card(cardno)}\ntransaction id: {details[0]}\nunique transaction id {details[1]}"
 
 def transfer(amount,cardno_parent,child):
+    '''The function carries out the process of transferring e-money from a customers account to another customers account'''
     from User_functions.card_function import cardlog as cl
     from User_functions.emailserver import otp_email_sender_yagmail as email
     from User_functions import accounts as acnt
@@ -89,6 +91,7 @@ def transfer(amount,cardno_parent,child):
         return f"insufficient funds. Balance = {bal1}"
 
 def add_history(description,cardno):
+    '''The function adds the action performed to the transactionlog table in database bank'''
     from User_functions import accounts as acnt
     import datetime as dt
     dame = str(dt.datetime.today())
@@ -106,6 +109,7 @@ def add_history(description,cardno):
     return details
 
 def ministatement(cardno):
+    '''The function returns the ministatement for a card number linked to a customer id'''
     from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost','root','vishal26','bank')
     cur = connection.cursor()
@@ -124,6 +128,7 @@ def ministatement(cardno):
         return final
 
 def gen_urid(file = 'urids'):
+    '''The function generates and returns a unique request id for a request'''
     import random
     fl = open(file,'r+')
     urids = fl.read()
@@ -137,6 +142,7 @@ def gen_urid(file = 'urids'):
         return str(num)
 
 def gen_rid(custid,accntid=0,file="urids"):
+    '''The function generates and returns a request id for a request'''
     import datetime as dt
     dame = str(dt.datetime.today())
     lis = dame.split()
@@ -145,6 +151,7 @@ def gen_rid(custid,accntid=0,file="urids"):
     return 'req' + urid + '.' + dateime + '.' + custid + '.' + str(accntid)
 
 def add_req_transac(description,custid,accntid=0,cardno = 0):
+    '''The function adds the request to the transactionlog'''
     from User_functions import accounts as acnt
     import datetime as dt
     dame = str(dt.datetime.today())
@@ -158,6 +165,7 @@ def add_req_transac(description,custid,accntid=0,cardno = 0):
     return rid
 
 def requeststatement(custid):
+    '''The function returns the requests sent to customer care by a customer linked to a customer id'''
     from User_functions import accounts as acnt
     d = {}
     connection = acnt.establish_connection('localhost','root','vishal26','bank')
@@ -175,6 +183,7 @@ def requeststatement(custid):
 
     return d
 def delete_request_requesttab(reqid):
+    '''The function deletes the completed request from request table'''
     from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = connection.cursor()
@@ -183,6 +192,7 @@ def delete_request_requesttab(reqid):
     connection.commit()
 
 def find_day(date):
+    '''The function returns the day of a given date'''
     import datetime
     import calendar
     stri = date.split('-')
@@ -195,6 +205,7 @@ def find_day(date):
 
 
 def get_history(custid,factor='',details=''):
+    '''The function returns all the actions performed by a customer linked to a customer id'''
     from User_functions import accounts as acnt
     connection = acnt.establish_connection('localhost', 'root', 'vishal26', 'bank')
     cur = connection.cursor()

@@ -2,6 +2,7 @@ import random
 from PIL import Image,ImageDraw, ImageFont, ImageFilter
 
 def font_select():
+    '''This function sets the font for the text in captcha'''
     x=random.randint(1,3)
     if x==1:
         a=ImageFont.truetype('ariblk.ttf',40)   #1
@@ -12,6 +13,7 @@ def font_select():
     return (a)
 
 def create_captcha():
+    '''This function creates the captcha'''
     st=''
     s="qwertyuioplkjhgfdsazxcvbnm1209873654QWERTYUIOPASDFGHJKLZXCVBNM"
     for i in range(8):
