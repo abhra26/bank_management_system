@@ -305,7 +305,7 @@ def delete_cust(custid):
         description = f"customer:{custid} deleted"
         rid = txn.add_req_transac(description, custid)
         cur.execute(f'''INSERT INTO service_stat_log VALUES
-        ('{rid}','{custid}',{0},'{description}' and service ended);''')
+        ('{rid}','{custid}',{0},'{description} and service ended');''')
         conection.commit()
         return True
     else:

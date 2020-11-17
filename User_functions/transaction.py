@@ -221,19 +221,6 @@ def get_history(custid,factor='',details=''):
 
 
 
-    connection.commit()
-
-
-
-
-
-# print(requeststatement('cstmr1'))
-
-
-
-
-
-
 
 
 
