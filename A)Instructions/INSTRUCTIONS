@@ -25,6 +25,8 @@ PLEASE GO THROUGH ALL THE POINTS MENTIONED BELOW PROPERLY TO UNDERSTAND THE REQU
         https://stackoverflow.com/questions/5920136/mysql-is-not-recognised-as-an-internal-or-external-command-operable-program-or-b
 
 
+>>> Before running the programs, please change the username and password of the bank database given here to yours.
+
 >>> Navigate to the Continental_user.py file and run it..enjoy :)
 
 
